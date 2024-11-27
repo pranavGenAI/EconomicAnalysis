@@ -329,32 +329,7 @@ def generate_content_1(resp):
             # Display the DataFrame in Streamlit
             st.subheader("Forecast Table")
             st.write(df)
-            
-            # Plot the data using Matplotlib
-            st.subheader("Forecast Plot")
-            plt.figure(figsize=(10, 6))
-            
-            # Plot each sector's data
-            for column in df.columns[1:]:  # Skip the "year" column
-                plt.plot(df['year'], df[column], label=column)
-            
-            # Customize the plot
-            plt.title('Economic Forecast (2025-2029)')
-            plt.xlabel('Year')
-            plt.ylabel('Expenditure (in units)')
-            plt.legend()
-            plt.grid(True)
-            
-            # Display the plot in Streamlit
-            st.pyplot(plt)
-            
-            # Display assumptions and summary
-            st.subheader("Assumptions")
-            st.write(data['assumptions'])
-            
-            st.subheader("Summary")
-            st.write(data['summary'])
-            st.write(response_1.text)
+
             return response_1.text  # Return generated text
         except Exception as e:
             retry_count += 1
