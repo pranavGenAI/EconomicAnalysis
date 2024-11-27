@@ -260,25 +260,69 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
-            Include brief calculations, brief key assumptions, and a concise summary at the end. 
-	    If user is asking for sectors then consider these sectors : Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
-            Economic Resources, Infrastructure and Transportation, and General Items. 
-	    If user is asking for revenue then provide revenue analysis.
-            Response format should be:
-            
-            Assumptions:
-            
-            Table:
-            | Category | 2025 | 2026 | 2027 | 2028 | 2029 |
-            |------|------------------------|----------|-----------|--------|
-            | Category | 500 | 400 | 300 | 200 |
-            | Category | 520 | 410 | 320 | 210 |
-            | Category | 540 | 420 | 340 | 220 |
-            
-	    Calculation:
-            
-	    Summary:
+            system_prompt = """
+	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
+Here is the input data:
+
+**Revenues**  
+| Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+|------------------------------------------------|-------|-------|-------|-------|-------|-------|-------|  
+| Total Revenues                                 | 906   | 917   | 782   | 965   | 1,268 | 1,193 | 1,172 |  
+| Taxes on Income, Profits, and Capital Gains    | 17    | 16    | 18    | 18    | 24    | 36    | 31    |  
+| Taxes on Goods and Services                    | 115   | 141   | 163   | 251   | 251   | 264   | 279   |  
+| Taxes on International Trade and Transactions  | 16    | 17    | 18    | 19    | 19    | 20    | 21    |  
+| Other Taxes                                    | 21    | 29    | 27    | 29    | 28    | 32    | 30    |  
+| Other Revenues                                 | 737   | 714   | 555   | 648   | 945   | 841   | 812   |  
+
+**Expenditures**  
+| Category                   | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+|----------------------------|-------|-------|-------|-------|-------|-------|-------|  
+| Total Expenditures         | 1,079 | 1,048 | 1,076 | 1,039 | 1,164 | 1,275 | 1,251 |  
+| Compensation of Employees  | 484   | 504   | 495   | 496   | 513   | 536   | 544   |  
+| Use of Goods and Services  | 169   | 164   | 203   | 205   | 258   | 272   | 277   |  
+| Financing Expenses         | 15    | 21    | 24    | 27    | 30    | 39    | 47    |  
+| Subsidies                  | 13    | 22    | 28    | 30    | 30    | 20    | 38    |  
+| Grants                     | 4     | 1     | 4     | 3     | 3     | 7     | 4     |  
+| Social Benefits            | 84    | 77    | 69    | 70    | 79    | 97    | 62    |  
+| Other Expenses             | 122   | 87    | 97    | 91    | 107   | 101   | 91    |  
+| Non-financial assets (CAPEX)| 188   | 172   | 155   | 117   | 143   | 203   | 189   |  
+
+**Expense by Sector**  
+| Sector                          | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+|---------------------------------|-------|-------|-------|-------|-------|-------|-------|  
+| Public Administration           | 31    | 29    | 36    | 34    | 41    | 45    | 43    |  
+| Military                        | 242   | 198   | 204   | 202   | 228   | 248   | 269   |  
+| Security and Regional Admin.    | 113   | 104   | 115   | 106   | 115   | 110   | 112   |  
+| Municipal Services              | 46    | 59    | 47    | 39    | 75    | 87    | 81    |  
+| Education                       | 209   | 202   | 205   | 192   | 202   | 202   | 195   |  
+| Health and Social Development   | 175   | 174   | 190   | 197   | 227   | 250   | 214   |  
+| Economic Resources              | 105   | 99    | 61    | 71    | 77    | 80    | 84    |  
+| Infrastructure and Transportation| 49    | 62    | 60    | 51    | 41    | 37    | 38    |  
+| General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
+
+**Instructions:**  
+- Use this data to forecast values for the period 2025–2029.  
+- Provide a table with forecasted revenues, expenditures, and sector-wise expenses.  
+- Include brief calculations, key assumptions, and a concise summary of the forecast.  
+
+Format the response as follows:  
+
+**Assumptions:**  
+- [List the key assumptions used.]  
+
+**Table:**  
+| Category                           | 2025  | 2026  | 2027  | 2028  | 2029  |  
+|------------------------------------|-------|-------|-------|-------|-------|  
+| Public Administration              | ...   | ...   | ...   | ...   | ...   |  
+| Military                           | ...   | ...   | ...   | ...   | ...   |  
+| ...                                | ...   | ...   | ...   | ...   | ...   |  
+
+**Calculations:**  
+- [Provide a brief explanation of how the forecast values were derived.]  
+
+**Summary:**  
+- [Provide a concise summary highlighting key trends and findings.]  
+
             """
 			
 # Combine the system prompt with the user question
@@ -286,7 +330,7 @@ def generate_content(user_question,image):
 # Generate content using the image
             print("Model generate")
             # st.write(prompt)
-            response = model.generate_content([prompt, image], stream=True)
+            response = model.generate_content(prompt, stream=True)
             response.resolve()
             print("Response text", response.text)
             return response.text  # Return generated text
