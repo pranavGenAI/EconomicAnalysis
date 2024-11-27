@@ -202,7 +202,7 @@ if "username" not in st.session_state:
 
 # Configure Google Generative AI with the API key
 #GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
-GOOGLE_API_KEY = "AIzaSyA_PW1ot2zkkf0fBMxx96OD2CySN11jgoM"
+GOOGLE_API_KEY = "AIzaSyCNX1H0w4y7dJPlwqvrxiW1OjAMf4dkFp0"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 def hash_password(password):
@@ -259,17 +259,13 @@ def generate_content(user_question,image):
             Assumptions:
             
             Table:
-| Sector                          | 2025  | 2026  | 2027  | 2028  | 2029  |
-|----------------------------------|-------|-------|-------|-------|-------|
-| Public Administration            | 500   | 520   | 540   | 560   | 580   |
-| Military                         | 400   | 410   | 420   | 430   | 440   |
-| Education                        | 300   | 320   | 340   | 360   | 380   |
-| Health                           | 200   | 210   | 220   | 230   | 240   |
-| Security & Regional Admin        | 150   | 155   | 160   | 165   | 170   |
-| Municipal Services               | 120   | 125   | 130   | 135   | 140   |
-| Economic Resources               | 180   | 185   | 190   | 195   | 200   |
-| Infrastructure & Transport       | 210   | 220   | 230   | 240   | 250   |
-| General Items                    | 100   | 105   | 110   | 115   | 120   |
+            | Year | Column 1 | Column 2 | Column 3 | Column 4 |
+            |------|------------------------|----------|-----------|--------|
+            | 2025 | 500                   | 400      | 300       | 200    |
+            | 2026 | 520                   | 410      | 320       | 210    |
+            | 2027 | 540                   | 420      | 340       | 220    |
+            | 2028 | 560                   | 430      | 360       | 230    |
+            | 2029 | 580                   | 440      | 380       | 240    |
             
             Summary:
             """
@@ -355,6 +351,3 @@ if __name__ == "__main__":
         main()
     else:
         login()
-
-
-
