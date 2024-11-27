@@ -7,6 +7,8 @@ import json
 import pandas as pd
 from fuzzywuzzy import fuzz  # Import the fuzzy matching function
 import re
+from io import StringIO  # Add this import
+import matplotlib.pyplot as plt
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
 background_html = """
