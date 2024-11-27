@@ -253,7 +253,7 @@ def generate_content(user_question,image):
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
             system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
-            Include brief calculations, brief key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
+            Include brief calculations, brief key assumptions, and a concise summary at the end. Following Sectors should be included: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
             Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. 
             Response format should be:
             
