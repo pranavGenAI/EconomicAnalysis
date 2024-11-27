@@ -257,7 +257,7 @@ def generate_content(user_question,image):
             # Generate content using the image
             print("Model generate")
             response = model.generate_content([prompt, image], stream=True)
-            st.write(user_question)
+            st.write(prompt)
             response.resolve()
             print("Response text", response.text)
             return response.text  # Return generated text
