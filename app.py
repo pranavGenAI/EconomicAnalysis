@@ -38,7 +38,7 @@ background_html = """
 
         // Arrays to store bubbles
         let bubbles = [];
-        const numBubbles = 100;
+        const numBubbles = 50;
         const glowDuration = 1000; // Glow duration in milliseconds
 
         // Function to initialize bubbles
@@ -251,8 +251,8 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            prompt = """You have been given the economic data over a period as a context. Use it to answer user questions. If user is asking you to calculate forecast calculate it and present it in table format. Do not repeat question. Calculate forecast if asked and present it in table format.
-            User question: {user_question}           
+            prompt = """You have been given the economic data over a period as a context. Do not repeat user question. Calculate forecast if asked and present it in table format. Also, show assumptions.
+            Question: {user_question}           
             """
             # Generate content using the image
             print("Model generate")
@@ -283,7 +283,7 @@ def main():
         # Document tab
         with tabs[0]:
             uploaded_images = ["KSAEco.png"]
-            user_question = st.text_input("Ask a Question from the RFP Files", key="user_question")
+            user_question = st.text_input("Ask a Question", key="user_question")
             #st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
 
                         # Inject custom CSS to hide the element
