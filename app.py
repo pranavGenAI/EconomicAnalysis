@@ -38,7 +38,7 @@ background_html = """
 
         // Arrays to store bubbles
         let bubbles = [];
-        const numBubbles = 50;
+        const numBubbles = 30;
         const glowDuration = 1000; // Glow duration in milliseconds
 
         // Function to initialize bubbles
@@ -192,7 +192,16 @@ st.markdown("""
     </p>
 """, unsafe_allow_html=True)
 
-
+st.markdown("""
+    <style>
+        .css-1d391kg {  /* This is the default Streamlit header class */
+            display: none;
+        }
+        .stAppHeader, .st-emotion-cache-h4xjwg, .ezrtsby2 { 
+            display: none;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Initialize session state
 if "logged_in" not in st.session_state:
