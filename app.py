@@ -302,31 +302,44 @@ def generate_content(user_question,image):
         table_end = response.text.find("Summary:")  # Optional marker for the end
         table_text = response.text[table_start:table_end].strip()
 
-        # Parse the table into a DataFrame
-        df = pd.read_csv(StringIO(table_text), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
-        df.columns = [col.strip() for col in df.columns]  # Clean column names
-        df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
+        # Check the extracted table text
+        if not table_text:
+            st.error("No valid table text found in the response.")
+            return None
+        
+        st.write("Extracted Table Text:")
+        st.text(table_text)  # Display raw table text for debugging
+        
+        # Try reading the table into a DataFrame
+        try:
+            df = pd.read_csv(StringIO(table_text), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
+            df.columns = [col.strip() for col in df.columns]  # Clean column names
+            df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
+            
+            # Display the DataFrame in Streamlit
+            st.subheader("Parsed Forecast Table")
+            st.dataframe(df)
 
-        # Display the DataFrame in Streamlit
-        st.subheader("Parsed Forecast Table")
-        st.dataframe(df)
+            # Plot the data using Matplotlib
+            plt.figure(figsize=(10, 6))
+            for column in df.columns[1:]:  # Skip the "Year" column
+                plt.plot(df["Year"], df[column], label=column)
 
-        # Plot the data using Matplotlib
-        plt.figure(figsize=(10, 6))
-        for column in df.columns[1:]:  # Skip the "Year" column
-            plt.plot(df["Year"], df[column], label=column)
+            plt.title("Economic Forecast (2025-2029)")
+            plt.xlabel("Year")
+            plt.ylabel("Value (in units)")
+            plt.legend()
+            plt.grid()
 
-        plt.title("Economic Forecast (2025-2029)")
-        plt.xlabel("Year")
-        plt.ylabel("Value (in units)")
-        plt.legend()
-        plt.grid()
+            # Display the plot in Streamlit
+            st.subheader("Forecast Chart")
+            st.pyplot(plt)
 
-        # Display the plot in Streamlit
-        st.subheader("Forecast Chart")
-        st.pyplot(plt)
-
-        return response.text  # Return the text response
+            return response.text  # Return the text response
+        
+        except Exception as parse_error:
+            st.error(f"Failed to parse table: {parse_error}")
+            return None
 
 def main():
     st.markdown("")
