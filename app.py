@@ -7,6 +7,7 @@ import json
 import pandas as pd
 from fuzzywuzzy import fuzz  # Import the fuzzy matching function
 import re
+import matplotlib.pyplot as plt
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
 background_html = """
@@ -38,7 +39,7 @@ background_html = """
 
         // Arrays to store bubbles
         let bubbles = [];
-        const numBubbles = 30;
+        const numBubbles = 50;
         const glowDuration = 1000; // Glow duration in milliseconds
 
         // Function to initialize bubbles
@@ -192,16 +193,7 @@ st.markdown("""
     </p>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-    <style>
-        .css-1d391kg {  /* This is the default Streamlit header class */
-            display: none;
-        }
-        .stAppHeader, .st-emotion-cache-h4xjwg, .ezrtsby2 { 
-            display: none;
-        }
-    </style>
-""", unsafe_allow_html=True)
+
 
 # Initialize session state
 if "logged_in" not in st.session_state:
@@ -253,7 +245,7 @@ logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.p
 
 def generate_content(user_question,image):
     max_retries = 10
-    delay = 5
+    delay = 10
     retry_count = 0
     while retry_count < max_retries:
         try:
@@ -268,17 +260,15 @@ def generate_content(user_question,image):
             Assumptions:
             
             Table:
-            | Category | 2025 | 2026 | 2027 | 2028 | 2029 |
+            | Year | Public Administration | Military | Education | Health |
             |------|------------------------|----------|-----------|--------|
-            | Sector/Expense Type/ Revenue | 500                   | 400      | 300       | 200    |
-            | Sector/Expense Type/ Revenue | 520                   | 410      | 320       | 210    |
-            | Sector/Expense Type/ Revenue | 540                   | 420      | 340       | 220    |
-            | Sector/Expense Type/ Revenue | 560                   | 430      | 360       | 230    |
-            | Sector/Expense Type/ Revenue | 580                   | 440      | 380       | 240    |
+            | 2025 | 500                   | 400      | 300       | 200    |
+            | 2026 | 520                   | 410      | 320       | 210    |
+            | 2027 | 540                   | 420      | 340       | 220    |
+            | 2028 | 560                   | 430      | 360       | 230    |
+            | 2029 | 580                   | 440      | 380       | 240    |
             
-	    Calculation:
-            
-	    Summary:
+            Summary:
             """
 			
 # Combine the system prompt with the user question
@@ -298,7 +288,83 @@ def generate_content(user_question,image):
     
     # Return None if all retries fail
     return None
-
+def generate_content_1(resp):
+    max_retries = 10
+    delay = 10
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            # Initialize the GenerativeModel
+            print("Model definition")
+            model = genai.GenerativeModel('gemini-1.5-pro')
+            system_prompt = """Convert the input table into the json format like below:
+{
+  "forecast": [
+    {"year": 2025, "Column Header": 825, "Column Header": 103, "Column Header": 215, "Column Header": 124},
+    {"year": 2026, "Column Header": 851, "Column Header": 108, "Column Header": 229, "Column Header": 131},
+    {"year": 2027, "Column Header": 878, "Column Header": 114, "Column Header": 243, "Column Header": 139},
+    {"year": 2028, "Column Header": 906, "Column Header": 120, "Column Header": 258, "Column Header": 147},
+    {"year": 2029, "Column Header": 935, "Column Header": 126, "Column Header": 274, "Column Header": 155}
+  ],
+  "assumptions": ["", ""],
+  "summary": ""
+}
+            """
+			
+# Combine the system prompt with the user question
+            prompt = f"{system_prompt}\n\n{resp}"
+# Generate content using the image
+            print("Model generate")
+            # st.write(prompt)
+            response_1 = model.generate_content(prompt, stream=True)
+            response_1.resolve()
+            print("Response text", response_1.text)
+		
+	# Parse the JSON response
+            data = json.loads(json_response)
+            
+            # Extract the forecast data into a DataFrame
+            df = pd.DataFrame(data['forecast'])
+            
+            # Display the DataFrame in Streamlit
+            st.subheader("Forecast Table")
+            st.write(df)
+            
+            # Plot the data using Matplotlib
+            st.subheader("Forecast Plot")
+            plt.figure(figsize=(10, 6))
+            
+            # Plot each sector's data
+            for column in df.columns[1:]:  # Skip the "year" column
+                plt.plot(df['year'], df[column], label=column)
+            
+            # Customize the plot
+            plt.title('Economic Forecast (2025-2029)')
+            plt.xlabel('Year')
+            plt.ylabel('Expenditure (in units)')
+            plt.legend()
+            plt.grid(True)
+            
+            # Display the plot in Streamlit
+            st.pyplot(plt)
+            
+            # Display assumptions and summary
+            st.subheader("Assumptions")
+            st.write(data['assumptions'])
+            
+            st.subheader("Summary")
+            st.write(data['summary'])
+            st.write(response_1.text)
+            return response_1.text  # Return generated text
+        except Exception as e:
+            retry_count += 1
+            if retry_count == max_retries:
+                st.error(f"Error generating content: Server not available. Please try again after sometime")
+            time.sleep(delay)
+    
+    # Return None if all retries fail
+    return None
+	
 def main():
     st.markdown("")
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
@@ -335,7 +401,7 @@ def main():
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
                             generated_text = generate_content(user_question,image)  # Generate content from image
-
+                            generated_text_1 = generate_content_1(generated_text)  # Generate content from image
                    
         # System tab
         with tabs[1]:
