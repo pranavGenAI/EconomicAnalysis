@@ -219,8 +219,7 @@ def hash_password(password):
 
 # Define users and hashed passwords for simplicity
 users = {
-    "pranav.baviskar": hash_password("pranav123"),
-    "akshay.bakhru": hash_password("akshay123")
+    "pranav.baviskar": hash_password("pranav123")
 }
 
 def login():
@@ -261,139 +260,36 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """
-	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
-Here is the input data:
-
-**Revenues**  
-| Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-|------------------------------------------------|-------|-------|-------|-------|-------|-------|-------|  
-| Total Revenues                                 | 906   | 917   | 782   | 965   | 1,268 | 1,193 | 1,172 |  
-| Taxes on Income, Profits, and Capital Gains    | 17    | 16    | 18    | 18    | 24    | 36    | 31    |  
-| Taxes on Goods and Services                    | 115   | 141   | 163   | 251   | 251   | 264   | 279   |  
-| Taxes on International Trade and Transactions  | 16    | 17    | 18    | 19    | 19    | 20    | 21    |  
-| Other Taxes                                    | 21    | 29    | 27    | 29    | 28    | 32    | 30    |  
-| Other Revenues                                 | 737   | 714   | 555   | 648   | 945   | 841   | 812   |  
-
-**Expenditures**  
-| Category                   | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-|----------------------------|-------|-------|-------|-------|-------|-------|-------|  
-| Total Expenditures         | 1,079 | 1,048 | 1,076 | 1,039 | 1,164 | 1,275 | 1,251 |  
-| Compensation of Employees  | 484   | 504   | 495   | 496   | 513   | 536   | 544   |  
-| Use of Goods and Services  | 169   | 164   | 203   | 205   | 258   | 272   | 277   |  
-| Financing Expenses         | 15    | 21    | 24    | 27    | 30    | 39    | 47    |  
-| Subsidies                  | 13    | 22    | 28    | 30    | 30    | 20    | 38    |  
-| Grants                     | 4     | 1     | 4     | 3     | 3     | 7     | 4     |  
-| Social Benefits            | 84    | 77    | 69    | 70    | 79    | 97    | 62    |  
-| Other Expenses             | 122   | 87    | 97    | 91    | 107   | 101   | 91    |  
-| Non-financial assets (CAPEX)| 188   | 172   | 155   | 117   | 143   | 203   | 189   |  
-
-**Expense by Sector**  
-| Sector                          | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-|---------------------------------|-------|-------|-------|-------|-------|-------|-------|  
-| Public Administration           | 31    | 29    | 36    | 34    | 41    | 45    | 43    |  
-| Military                        | 242   | 198   | 204   | 202   | 228   | 248   | 269   |  
-| Security and Regional Admin.    | 113   | 104   | 115   | 106   | 115   | 110   | 112   |  
-| Municipal Services              | 46    | 59    | 47    | 39    | 75    | 87    | 81    |  
-| Education                       | 209   | 202   | 205   | 192   | 202   | 202   | 195   |  
-| Health and Social Development   | 175   | 174   | 190   | 197   | 227   | 250   | 214   |  
-| Economic Resources              | 105   | 99    | 61    | 71    | 77    | 80    | 84    |  
-| Infrastructure and Transportation| 49    | 62    | 60    | 51    | 41    | 37    | 38    |  
-| General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
-
-**Instructions:**  
-- Use this data to forecast values for the period 2025–2029.  
-- Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
-- Include brief calculations, key assumptions, and a concise summary of the forecast.  
-
-Format the response as follows:  
-
-**Assumptions:**  
-- [List the key assumptions used.]  
-
-**Table:**  
-| Category                           | 2025  | 2026  | 2027  | 2028  | 2029  |  
-|------------------------------------|-------|-------|-------|-------|-------|  
-| Public Administration              | ...   | ...   | ...   | ...   | ...   |  
-| Military                           | ...   | ...   | ...   | ...   | ...   |  
-| ...                                | ...   | ...   | ...   | ...   | ...   |  
-
-**Calculations:**  
-- [Provide a brief explanation of how the forecast values were derived.]  
-
-**Summary:**  
-- [Provide a concise summary highlighting key trends and findings.]  
-
+            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
+            Include brief calculations, brief key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
+            Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. 
+            Response format should be:
+            
+            Assumptions:
+            
+            Table:
+            | Category | 2025 | 2026 | 2027 | 2028 | 2029 |
+            |------|------------------------|----------|-----------|--------|
+            | Sector/Expense Type/ Revenue | 500                   | 400      | 300       | 200    |
+            | Sector/Expense Type/ Revenue | 520                   | 410      | 320       | 210    |
+            | Sector/Expense Type/ Revenue | 540                   | 420      | 340       | 220    |
+            | Sector/Expense Type/ Revenue | 560                   | 430      | 360       | 230    |
+            | Sector/Expense Type/ Revenue | 580                   | 440      | 380       | 240    |
+            
+	    Calculation:
+            
+	    Summary:
             """
 			
 # Combine the system prompt with the user question
-            prompt = f"{system_prompt}\n\nUser Question:{user_question}"
+            prompt = f"{system_prompt}\n\n{user_question}"
 # Generate content using the image
             print("Model generate")
             # st.write(prompt)
-            response = model.generate_content(prompt, stream=True)
+            response = model.generate_content([prompt, image], stream=True)
             response.resolve()
             print("Response text", response.text)
             return response.text  # Return generated text
-        except Exception as e:
-            retry_count += 1
-            if retry_count == max_retries:
-                st.error(f"Error generating content: Server not available. Please try again after sometime")
-            time.sleep(delay)
-    
-    # Return None if all retries fail
-    return None
-
-def generate_content_1(resp):
-    max_retries = 10
-    delay = 5
-    retry_count = 0
-    while retry_count < max_retries:
-        try:
-            # Initialize the GenerativeModel
-            print("Model definition")
-            model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """Convert the input table into the json format like below:
-	{
-	  "forecast": [
-	    {"year": 2025, "Cateogry": 825, "Cateogry": 103, "Cateogry": 215, "Cateogry": 124},
-	    {"year": 2026, "Cateogry": 851, "Cateogry": 108, "Cateogry": 229, "Cateogry": 131},
-	    {"year": 2027, "Cateogry": 878, "Cateogry": 114, "Cateogry": 243, "Cateogry": 139},
-	    {"year": 2028, "Cateogry": 906, "Cateogry": 120, "Cateogry": 258, "Cateogry": 147},
-	    {"year": 2029, "Cateogry": 935, "Cateogry": 126, "Cateogry": 274, "Cateogry": 155}
-	  ],
-	  "assumptions": ["", ""],
-	  "summary": ""
-	}
-            """
-			
-# Combine the system prompt with the user question
-            prompt = f"{system_prompt}\n\nInput text:{resp}"
-# Generate content using the image
-            print("Model generate")
-            # st.write(prompt)
-            response_1 = model.generate_content(prompt, stream=True)
-            response_1.resolve()
-            st.write(response_1.text)
-            df = pd.DataFrame(response_1.text["forecast"])
-
-            # Plot each category
-            plt.figure(figsize=(12, 6))
-            for column in df.columns[1:]:
-                plt.plot(df["year"], df[column], label=column)
-
-            # Add labels, title, legend, and grid
-            plt.title("Sector-Wise Expense Forecast (2025–2029)", fontsize=14)
-            plt.xlabel("Year", fontsize=12)
-            plt.ylabel("Expense (in units)", fontsize=12)
-            plt.legend(title="Sectors", bbox_to_anchor=(1.05, 1), loc="upper left")
-            plt.grid(alpha=0.3)
-            plt.tight_layout()
-
-            # Show the plot
-            plt.show()
-
-            return response_1.text  # Return generated text
         except Exception as e:
             retry_count += 1
             if retry_count == max_retries:
@@ -439,7 +335,6 @@ def main():
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
                             generated_text = generate_content(user_question,image)  # Generate content from image
-                            generated_text_1 = generate_content_1(generated_text)
 
                    
         # System tab
