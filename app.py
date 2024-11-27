@@ -251,7 +251,20 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = "You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, key assumptions, and a concise summary at the end. Focus on the following sectors: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary"
+            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. Response format should be 
+            Assumptions:
+            
+            Table:
+            | Year | Public Administration | Military | Education | Health |
+            |------|------------------------|----------|-----------|--------|
+            | 2025 | 500                   | 400      | 300       | 200    |
+            | 2026 | 520                   | 410      | 320       | 210    |
+            | 2027 | 540                   | 420      | 340       | 220    |
+            | 2028 | 560                   | 430      | 360       | 230    |
+            | 2029 | 580                   | 440      | 380       | 240    |
+            
+            Summary:
+"""
 
 # Combine the system prompt with the user question
             prompt = f"{system_prompt}\n\n{user_question}"
