@@ -252,6 +252,9 @@ def generate_content(image):
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
             prompt = """You have been given the economic data over a period as a context. Use it to answer user questions. Try your best to be as accurate as possible.
+            User question: 
+            Show revenue forecast for the next 5 years
+            
             """
             # Generate content using the image
             print("Model generate")
