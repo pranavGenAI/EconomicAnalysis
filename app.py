@@ -375,6 +375,24 @@ def generate_content_1(resp):
             response_1 = model.generate_content(prompt, stream=True)
             response_1.resolve()
             st.write(response_1.text)
+            df = pd.DataFrame(response_1.text["forecast"])
+
+            # Plot each category
+            plt.figure(figsize=(12, 6))
+            for column in df.columns[1:]:
+                plt.plot(df["year"], df[column], label=column)
+
+            # Add labels, title, legend, and grid
+            plt.title("Sector-Wise Expense Forecast (2025–2029)", fontsize=14)
+            plt.xlabel("Year", fontsize=12)
+            plt.ylabel("Expense (in units)", fontsize=12)
+            plt.legend(title="Sectors", bbox_to_anchor=(1.05, 1), loc="upper left")
+            plt.grid(alpha=0.3)
+            plt.tight_layout()
+
+            # Show the plot
+            plt.show()
+
             return response_1.text  # Return generated text
         except Exception as e:
             retry_count += 1
