@@ -202,7 +202,7 @@ if "username" not in st.session_state:
 
 # Configure Google Generative AI with the API key
 #GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
-GOOGLE_API_KEY = "AIzaSyBEkhrB3S3KX76vfLfbXja4KZtx672eI4Q"
+GOOGLE_API_KEY = "AIzaSyAqziwvuuVrKAaME0VOHYTfkRzEowwAtzc"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 def hash_password(password):
@@ -251,20 +251,7 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, brief key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. Response format should be 
-            Assumptions:
-            
-            Table:
-            | Year | Public Administration | Military | Education | Health |
-            |------|------------------------|----------|-----------|--------|
-            | 2025 | 500                   | 400      | 300       | 200    |
-            | 2026 | 520                   | 410      | 320       | 210    |
-            | 2027 | 540                   | 420      | 340       | 220    |
-            | 2028 | 560                   | 430      | 360       | 230    |
-            | 2029 | 580                   | 440      | 380       | 240    |
-            
-            Summary:
-"""
+            system_prompt = "You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, key assumptions, and a concise summary at the end. Focus on the following sectors: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary"
 
 # Combine the system prompt with the user question
             prompt = f"{system_prompt}\n\n{user_question}"
@@ -274,9 +261,6 @@ def generate_content(user_question,image):
             response = model.generate_content([prompt, image], stream=True)
             response.resolve()
             print("Response text", response.text)
-
-            
-
             return response.text  # Return generated text
         except Exception as e:
             retry_count += 1
