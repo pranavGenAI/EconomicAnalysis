@@ -259,15 +259,17 @@ def generate_content(user_question,image):
             Assumptions:
             
             Table:
-            | Year | Sector/Expense Type/ Revenue | Sector/Expense Type/ Revenue | Sector/Expense Type/ Revenue | Sector/Expense Type/ Revenue |
+            | Category | 2025 | 2026 | 2027 | 2028 | 2029 |
             |------|------------------------|----------|-----------|--------|
-            | 2025 | 500                   | 400      | 300       | 200    |
-            | 2026 | 520                   | 410      | 320       | 210    |
-            | 2027 | 540                   | 420      | 340       | 220    |
-            | 2028 | 560                   | 430      | 360       | 230    |
-            | 2029 | 580                   | 440      | 380       | 240    |
+            | Sector/Expense Type/ Revenue | 500                   | 400      | 300       | 200    |
+            | Sector/Expense Type/ Revenue | 520                   | 410      | 320       | 210    |
+            | Sector/Expense Type/ Revenue | 540                   | 420      | 340       | 220    |
+            | Sector/Expense Type/ Revenue | 560                   | 430      | 360       | 230    |
+            | Sector/Expense Type/ Revenue | 580                   | 440      | 380       | 240    |
             
-            Summary:
+	    Calculation:
+            
+	    Summary:
             """
 			
 # Combine the system prompt with the user question
