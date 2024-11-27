@@ -259,7 +259,7 @@ def generate_content(user_question,image):
             Assumptions:
             
             Table:
-            | Year | Column 1 | Column 2 | Column 3 | Column 4 |
+            | Year | Sector/Expense Type/ Revenue | Sector/Expense Type/ Revenue | Sector/Expense Type/ Revenue | Sector/Expense Type/ Revenue |
             |------|------------------------|----------|-----------|--------|
             | 2025 | 500                   | 400      | 300       | 200    |
             | 2026 | 520                   | 410      | 320       | 210    |
