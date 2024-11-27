@@ -9,25 +9,68 @@ from fuzzywuzzy import fuzz  # Import the fuzzy matching function
 import re
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
-st.markdown(
-    """
+st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
+st.markdown("")
+st.markdown("""
     <style>
-    .stButton button {
-        background: linear-gradient(120deg,#FF007F, #A020F0 100%) !important;
-        color: white !important;
-    }
-    body {
-        color: white;
-        background-color: #1E1E1E;
-    }
-    .stTextInput, .stSelectbox, .stTextArea, .stFileUploader {
-        color: white;
-        background-color: #2E2E2E;
-    }
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .animated-gradient-text {
+            font-family: "Graphik Black";
+            font-size: 42px;
+            background: linear-gradient(to right, #7953cd 20%, #00affa 30%, #0190cd 70%, #764ada 80%);
+            background-size: 300% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientAnimation 10s ease-in-out infinite;
+        }
     </style>
-    """,
-    unsafe_allow_html=True
-)
+    <p class="animated-gradient-text">
+        DataViz: Your personal data analyst!
+    </p>
+""", unsafe_allow_html=True)
+
+st.markdown('''<style>
+    .stApp > header {
+        background-color: transparent;
+    }
+    .stApp {    
+        background: linear-gradient(45deg, #001f3f 55%, #007f7f 65%, #005f5f 80%);
+        animation: my_animation 20s ease infinite;
+        background-size: 200% 200%;
+        background-attachment: fixed;
+    }
+    
+    @keyframes my_animation {
+        0% {background-position: 0% 0%;}
+        80% {background-position: 80% 80%;}
+    }
+    
+    div.stButton > button:first-child {
+        background: linear-gradient(45deg, #00bfbf 45%, #008f8f 70%);
+        color: white;
+        border: none;
+    }
+    
+    div.stButton > button:hover {
+        background: linear-gradient(45deg, #00a9a9 45%, #007f7f 55%, #005f5f 70%);
+    }
+    
+    div.stButton > button:active {
+        position:relative;
+        top:3px;
+    }    
+</style>''', unsafe_allow_html=True)
 
 # Initialize session state
 if "logged_in" not in st.session_state:
@@ -297,75 +340,3 @@ if __name__ == "__main__":
 
 
 
-# Custom CSS for the header and logo
-# Custom CSS for the header and logo
-st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Graphik:wght@400;700&display=swap');
-
-    body {
-        background-color: #f0f0f0;
-        color: black;
-        font-family: 'Graphik', sans-serif;
-    }
-    .main {
-        background-color: #f0f0f0;
-    }
-    .stApp {
-        background-color: #f0f0f0;
-    }
-    header {
-        background-color: #660094 !important;
-        padding: 10px 40px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .logo {
-        height: 30px;
-        width: auto;
-        margin-right: 20px;  /* Space between logo and next item */
-    }
-    .header-content {
-        display: flex;
-        align-items: center;
-    }
-    .header-right {
-        display: flex;
-        align-items: center;
-    }
-
-    h1 {
-        color: black;
-        margin: 0;
-        padding: 0;
-    }
-
-    .generated-text-box {
-        border: 3px solid #A020F0; /* Thick border */
-        padding: 20px;  
-        border-radius: 10px; /* Rounded corners */
-        color: black; /* Text color */
-        background-color: #FFFFFF; /* Background color matching theme */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# Adding the logo and other elements in the header
-st.markdown(
-    f"""
-    <header tabindex="-1" data-testid="stHeader" class="st-emotion-cache-12fmjuu ezrtsby2">
-        <div data-testid="stDecoration" id="stDecoration" class="st-emotion-cache-1dp5vir ezrtsby1"></div>
-        <div class="header-content">
-            <!-- Add the logo here -->
-            <img src="https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png" class="logo" alt="Logo">
-        
-    </header>
-
-    """,
-    unsafe_allow_html=True
-)
