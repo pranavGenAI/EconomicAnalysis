@@ -318,7 +318,7 @@ def generate_content_1(resp):
             response_1 = model.generate_content(prompt, stream=True)
             response_1.resolve()
             print("Response text", response_1.text)
-	        st.write(response_1.text)
+            st.write(response_1.text)
             return response_1.text  # Return generated text
         except Exception as e:
             retry_count += 1
