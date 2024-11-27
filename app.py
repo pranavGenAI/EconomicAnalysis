@@ -251,7 +251,7 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            prompt = """You have been given the economic data over a period as a context. Use it to answer user questions. If user is asking you to calculate forecast calculate it and present it in table format.
+            prompt = """You have been given the economic data over a period as a context. Use it to answer user questions. If user is asking you to calculate forecast calculate it and present it in table format. Do not repeat question. Calculate forecast if asked and present it in table format.
             User question: {user_question}           
             """
             # Generate content using the image
