@@ -242,7 +242,7 @@ def logout():
 # Path to the logo image
 logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png"
 
-def generate_content(image):
+def generate_content(user_question,image):
     max_retries = 10
     delay = 10
     retry_count = 0
@@ -252,9 +252,7 @@ def generate_content(image):
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
             prompt = """You have been given the economic data over a period as a context. Use it to answer user questions. If user is asking you to calculate forecast calculate it and present it in table format.
-            User question: 
-            Show revenue forecast for the next 5 years
-            
+            User question: {user_question}           
             """
             # Generate content using the image
             print("Model generate")
@@ -271,32 +269,6 @@ def generate_content(image):
     # Return None if all retries fail
     return None
 
-def generate_compare_genAI(extracted_values, values_from_excel, keys_of_interest):
-    model = genai.GenerativeModel('gemini-1.5-pro')
-    # Format the prompt for the AI model to compare each key
-    prompt = {
-        "keys_of_interest": keys_of_interest,
-        "extracted_values": extracted_values,
-        "values_from_excel": values_from_excel
-    }
-    # Generate the comparison JSON response
-    response = model.generate_content(f"""Compare the extracted values with values from Excel for each key in {prompt} and return a JSON with only 'Yes' or 'No' as values for each key. It may not be exact match. For Key 0 understand the input and if both are matching to some bit then return Yes. Response should only include json file in the format like:
-        Example format:
-        {{
-            "Key1": "Yes",
-            "Key2": "No",
-            ...
-        }} Make sure to return only the JSON, with no other text or explanation.""")
-    # Clean the response
-    cleaned_response = response.text.strip().replace("```json", "").replace("```", "").strip()
-    try:
-        # Parse the cleaned response as JSON
-        comparison_results = json.loads(cleaned_response)
-        return comparison_results
-    except json.JSONDecodeError:
-        st.error(f"Invalid JSON returned by AI: {cleaned_response}")
-        return {}
-
 def main():
     st.title("Invoice Processing")
     st.markdown("")
@@ -306,11 +278,12 @@ def main():
 
     with col1:
         # Place tabs within col1
-        tabs = st.tabs(["📄 Document", "⚙️ System"])
+        tabs = st.tabs(["📄 Ask here", "⚙️ Fiscal Data"])
 
         # Document tab
         with tabs[0]:
             uploaded_images = ["KSAEco.png"]
+            user_question = st.text_input("Ask a Question from the RFP Files", key="user_question")
             #st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
 
                         # Inject custom CSS to hide the element
@@ -332,7 +305,7 @@ def main():
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(image)  # Generate content from image
+                            generated_text = generate_content(user_question,image)  # Generate content from image
 
                    
         # System tab
