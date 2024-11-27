@@ -251,11 +251,14 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            prompt = user_question
-            # Generate content using the image
+            system_prompt = "You have been given economic data. If the user is asking for a forecast, then create a forecast table and show calculations and assumptions in brief. Your answer should be detailed."
+
+# Combine the system prompt with the user question
+            prompt = f"{system_prompt}\n\n{user_question}"
+# Generate content using the image
             print("Model generate")
-            response = model.generate_content([prompt, image], stream=True)
             st.write(prompt)
+            response = model.generate_content([prompt, image], stream=True)
             response.resolve()
             print("Response text", response.text)
             return response.text  # Return generated text
