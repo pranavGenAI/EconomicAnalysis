@@ -279,7 +279,7 @@ def main():
 
     with col1:
         # Place tabs within col1
-        tabs = st.tabs(["📄 Ask here", "⚙️ Fiscal Data"])
+        tabs = st.tabs(["📄 Ask Question here", "⚙️ See Fiscal Data here"])
 
         # Document tab
         with tabs[0]:
@@ -302,7 +302,7 @@ def main():
             if uploaded_images:
                 for uploaded_image in uploaded_images:
                     image = PIL.Image.open(uploaded_image)
-                    button_label = f"Validate {uploaded_images.index(uploaded_image) + 1}" if len(uploaded_images) > 1 else "Validate"
+                    button_label = f"Submit {uploaded_images.index(uploaded_image) + 1}" if len(uploaded_images) > 1 else "Submit"
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
