@@ -321,7 +321,7 @@ def main():
     # Display extraction result in col3, separate from col1
     with col3:
         if generated_text:
-            st.markdown("### Response:")
+            st.markdown("### Evaluation Results:")
             st.write(generated_text)
 
                 
