@@ -272,7 +272,6 @@ def generate_content(user_question,image):
     return None
 
 def main():
-    st.title("Invoice Processing")
     st.markdown("")
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
 
