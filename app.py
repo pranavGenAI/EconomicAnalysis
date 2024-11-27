@@ -251,7 +251,7 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = "You have been given economic data. If the user is asking for a forecast, then create a forecast table and show calculations and assumptions in brief. Your answer should include only table and assumption."
+            system_prompt = "You have been given economic data. If the user is asking for a forecast, then create a forecast table and show calculations and assumptions in brief. Your answer should include only table and assumption. Sectors are Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, General Items"
 
 # Combine the system prompt with the user question
             prompt = f"{system_prompt}\n\n{user_question}"
