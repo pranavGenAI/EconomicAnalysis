@@ -260,9 +260,9 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
+            system_prompt = """If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
             Include brief calculations, brief key assumptions, and a concise summary at the end. If user is asking for sectors then consider these sectors : Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
-            Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. If user is asking for sector then use the sector listed.
+            Economic Resources, Infrastructure and Transportation, and General Items. If user is asking for sector then use the sector listed above and if user is asking for revenue then provide revenue analysis.
             Response format should be:
             
             Assumptions:
