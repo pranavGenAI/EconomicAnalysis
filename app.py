@@ -310,7 +310,8 @@ def main():
 
         # Document tab
         with tabs[0]:
-            uploaded_images = st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
+            uploaded_images = ["KSAEco.png"]
+            #st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
 
                         # Inject custom CSS to hide the element
             hide_css = """
@@ -333,8 +334,7 @@ def main():
                         with st.spinner("Evaluating..."):
                             generated_text = generate_content(image)  # Generate content from image
 
-                    st.image(uploaded_image, caption="", use_column_width=True)
-
+                   
         # System tab
         with tabs[1]:
             excel_file = "KSAEcoData.xlsx"  # Ensure this file is in your working directory
