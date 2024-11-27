@@ -7,8 +7,6 @@ import json
 import pandas as pd
 from fuzzywuzzy import fuzz  # Import the fuzzy matching function
 import re
-from io import StringIO  # Add this import
-import matplotlib.pyplot as plt
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
 background_html = """
@@ -204,7 +202,7 @@ if "username" not in st.session_state:
 
 # Configure Google Generative AI with the API key
 #GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
-GOOGLE_API_KEY = "AIzaSyCNX1H0w4y7dJPlwqvrxiW1OjAMf4dkFp0"
+GOOGLE_API_KEY = "AIzaSyAqziwvuuVrKAaME0VOHYTfkRzEowwAtzc"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 def hash_password(password):
@@ -245,17 +243,14 @@ def logout():
 logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png"
 
 def generate_content(user_question,image):
-    max_retries = 5
+    max_retries = 10
+    delay = 10
     retry_count = 0
-    response = None
-    
     while retry_count < max_retries:
         try:
             # Initialize the GenerativeModel
-            st.write("Model definition")
+            print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            
-            # System prompt definition
             system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
             Include brief calculations, brief key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
             Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. 
@@ -274,80 +269,24 @@ def generate_content(user_question,image):
             
             Summary:
             """
-            
-            # Combine the system prompt with the user question
+			
+# Combine the system prompt with the user question
             prompt = f"{system_prompt}\n\n{user_question}"
-            
-            # Try generating content up to max_retries times with 10 seconds delay between attempts
-            st.write("Model generating content...")
+# Generate content using the image
+            print("Model generate")
+            # st.write(prompt)
             response = model.generate_content([prompt, image], stream=True)
             response.resolve()
-            
-            # If successful, break out of the loop
-            if response:
-                st.subheader("Model Response")
-                st.text(response.text)
-                break
-            
+            print("Response text", response.text)
+            return response.text  # Return generated text
         except Exception as e:
             retry_count += 1
-            st.write(f"Error: {e}. Retrying {retry_count}/{max_retries}...")
-            time.sleep(10)  # Wait for 10 seconds before retrying
-            
-            if retry_count >= max_retries:
-                st.error("Failed to generate content after multiple retries.")
-                return None
+            if retry_count == max_retries:
+                st.error(f"Error generating content: Server not available. Please try again after sometime")
+            time.sleep(delay)
     
-    # Extract the table portion from the response
-    if response:
-        table_start = response.text.find("Table:") + len("Table:")
-        table_end = response.text.find("Summary:")  # Optional marker for the end
-        table_text = response.text[table_start:table_end].strip()
-
-        # Check the extracted table text
-        if not table_text:
-            st.error("No valid table text found in the response.")
-            return None
-        
-        st.write("Extracted Table Text:")
-        st.text(table_text)  # Display raw table text for debugging
-        
-        # Clean up the table text by removing extra spaces and ensuring proper row splitting
-        table_text_cleaned = "\n".join([line.strip() for line in table_text.split("\n") if line.strip()])  # Remove extra spaces
-        
-        # Further clean the columns and rows to make sure they align properly
-        table_text_cleaned = table_text_cleaned.replace(" |", "|").replace("| ", "|")  # Fix space around separators
-        
-        # Try reading the table into a DataFrame
-        try:
-            df = pd.read_csv(StringIO(table_text_cleaned), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
-            df.columns = [col.strip() for col in df.columns]  # Clean column names
-            df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
-            
-            # Display the DataFrame in Streamlit
-            st.subheader("Parsed Forecast Table")
-            st.dataframe(df)
-
-            # Plot the data using Matplotlib
-            plt.figure(figsize=(10, 6))
-            for column in df.columns[1:]:  # Skip the "Year" column
-                plt.plot(df["Year"], df[column], label=column)
-
-            plt.title("Economic Forecast (2025-2029)")
-            plt.xlabel("Year")
-            plt.ylabel("Value (in units)")
-            plt.legend()
-            plt.grid()
-
-            # Display the plot in Streamlit
-            st.subheader("Forecast Chart")
-            st.pyplot(plt)
-
-            return response.text  # Return the text response
-        
-        except Exception as parse_error:
-            st.error(f"Failed to parse table: {parse_error}")
-            return None
+    # Return None if all retries fail
+    return None
 
 def main():
     st.markdown("")
@@ -412,6 +351,3 @@ if __name__ == "__main__":
         main()
     else:
         login()
-
-
-
