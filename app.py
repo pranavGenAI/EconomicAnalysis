@@ -312,9 +312,12 @@ def generate_content(user_question,image):
         st.write("Extracted Table Text:")
         st.text(table_text)  # Display raw table text for debugging
         
+        # Clean up the table text by removing extra spaces
+        table_text_cleaned = "\n".join([line.strip() for line in table_text.split("\n") if line.strip()])  # Remove extra spaces
+        
         # Try reading the table into a DataFrame
         try:
-            df = pd.read_csv(StringIO(table_text), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
+            df = pd.read_csv(StringIO(table_text_cleaned), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
             df.columns = [col.strip() for col in df.columns]  # Clean column names
             df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
             
