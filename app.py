@@ -277,6 +277,9 @@ def generate_content(user_question,image):
             table_start = response_text.find("Table:") + len("Table:")
             table_end = response_text.find("Summary:")  # Optional marker for the end
             table_text = response_text[table_start:table_end].strip()
+            st.write(table_start)
+            st.write(table_end)
+            st.write(table_text)
 
             
             # Parse the table into a DataFrame
