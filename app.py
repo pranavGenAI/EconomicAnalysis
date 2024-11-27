@@ -243,78 +243,90 @@ def logout():
 logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png"
 
 def generate_content(user_question,image):
-    max_retries = 10
-    delay = 10
+    max_retries = 5
     retry_count = 0
+    response = None
+    
     while retry_count < max_retries:
         try:
             # Initialize the GenerativeModel
-            print("Model definition")
+            st.write("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, brief key assumptions, and a concise summary at the end. Focus on the following sectors: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary
+            
+            # System prompt definition
+            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
+            Include brief calculations, brief key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
+            Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. 
+            Response format should be:
+            
             Assumptions:
-
-Table:
-| Year | Public Administration | Military | Education | Health |
-|------|------------------------|----------|-----------|--------|
-| 2025 | 500                   | 400      | 300       | 200    |
-| 2026 | 520                   | 410      | 320       | 210    |
-| 2027 | 540                   | 420      | 340       | 220    |
-| 2028 | 560                   | 430      | 360       | 230    |
-| 2029 | 580                   | 440      | 380       | 240    |
-
-Summary:"""
-
-# Combine the system prompt with the user question
+            
+            Table:
+            | Year | Public Administration | Military | Education | Health |
+            |------|------------------------|----------|-----------|--------|
+            | 2025 | 500                   | 400      | 300       | 200    |
+            | 2026 | 520                   | 410      | 320       | 210    |
+            | 2027 | 540                   | 420      | 340       | 220    |
+            | 2028 | 560                   | 430      | 360       | 230    |
+            | 2029 | 580                   | 440      | 380       | 240    |
+            
+            Summary:
+            """
+            
+            # Combine the system prompt with the user question
             prompt = f"{system_prompt}\n\n{user_question}"
-# Generate content using the image
-            print("Model generate")
-            # st.write(prompt)
+            
+            # Try generating content up to max_retries times with 10 seconds delay between attempts
+            st.write("Model generating content...")
             response = model.generate_content([prompt, image], stream=True)
             response.resolve()
-            print("Response text", response.text)
-
-            table_start = response_text.find("Table:") + len("Table:")
-            table_end = response_text.find("Summary:")  # Optional marker for the end
-            table_text = response_text[table_start:table_end].strip()
-            st.write(table_start)
-            st.write(table_end)
-            st.write(table_text)
-
             
-            # Parse the table into a DataFrame
-            df = pd.read_csv(StringIO(table_text), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
-            df.columns = [col.strip() for col in df.columns]  # Clean column names
-            df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
+            # If successful, break out of the loop
+            if response:
+                st.subheader("Model Response")
+                st.text(response.text)
+                break
             
-            # Display the DataFrame in Streamlit
-            st.subheader("Parsed Forecast Table")
-            st.dataframe(df)
-            
-            # Plot the data using Matplotlib
-            plt.figure(figsize=(10, 6))
-            for column in df.columns[1:]:  # Skip the "Year" column
-                plt.plot(df["Year"], df[column], label=column)
-            
-            plt.title("Economic Forecast (2025-2029)")
-            plt.xlabel("Year")
-            plt.ylabel("Value (in units)")
-            plt.legend()
-            plt.grid()
-            
-            # Display the plot in Streamlit
-            st.subheader("Forecast Chart")
-            st.pyplot(plt)
-            
-            return response.text  # Return generated text
         except Exception as e:
             retry_count += 1
-            if retry_count == max_retries:
-                st.error(f"Error generating content: Server not available. Please try again after sometime")
-            time.sleep(delay)
+            st.write(f"Error: {e}. Retrying {retry_count}/{max_retries}...")
+            time.sleep(10)  # Wait for 10 seconds before retrying
+            
+            if retry_count >= max_retries:
+                st.error("Failed to generate content after multiple retries.")
+                return None
     
-    # Return None if all retries fail
-    return None
+    # Extract the table portion from the response
+    if response:
+        table_start = response.text.find("Table:") + len("Table:")
+        table_end = response.text.find("Summary:")  # Optional marker for the end
+        table_text = response.text[table_start:table_end].strip()
+
+        # Parse the table into a DataFrame
+        df = pd.read_csv(StringIO(table_text), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
+        df.columns = [col.strip() for col in df.columns]  # Clean column names
+        df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
+
+        # Display the DataFrame in Streamlit
+        st.subheader("Parsed Forecast Table")
+        st.dataframe(df)
+
+        # Plot the data using Matplotlib
+        plt.figure(figsize=(10, 6))
+        for column in df.columns[1:]:  # Skip the "Year" column
+            plt.plot(df["Year"], df[column], label=column)
+
+        plt.title("Economic Forecast (2025-2029)")
+        plt.xlabel("Year")
+        plt.ylabel("Value (in units)")
+        plt.legend()
+        plt.grid()
+
+        # Display the plot in Streamlit
+        st.subheader("Forecast Chart")
+        st.pyplot(plt)
+
+        return response.text  # Return the text response
 
 def main():
     st.markdown("")
