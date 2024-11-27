@@ -261,8 +261,10 @@ def generate_content(user_question,image):
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
             system_prompt = """If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. 
-            Include brief calculations, brief key assumptions, and a concise summary at the end. If user is asking for sectors then consider these sectors : Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
-            Economic Resources, Infrastructure and Transportation, and General Items. If user is asking for sector then use the sector listed above and if user is asking for revenue then provide revenue analysis.
+            Include brief calculations, brief key assumptions, and a concise summary at the end. 
+	    If user is asking for sectors then consider these sectors : Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, 
+            Economic Resources, Infrastructure and Transportation, and General Items. 
+	    If user is asking for revenue then provide revenue analysis.
             Response format should be:
             
             Assumptions:
@@ -270,11 +272,9 @@ def generate_content(user_question,image):
             Table:
             | Category | 2025 | 2026 | 2027 | 2028 | 2029 |
             |------|------------------------|----------|-----------|--------|
-            | Sector/Expense Type/ Revenue | 500 | 400 | 300 | 200 |
-            | Sector/Expense Type/ Revenue | 520 | 410 | 320 | 210 |
-            | Sector/Expense Type/ Revenue | 540 | 420 | 340 | 220 |
-            | Sector/Expense Type/ Revenue | 560 | 430 | 360 | 230 |
-            | Sector/Expense Type/ Revenue | 580 | 440 | 380 | 240 |
+            | Category | 500 | 400 | 300 | 200 |
+            | Category | 520 | 410 | 320 | 210 |
+            | Category | 540 | 420 | 340 | 220 |
             
 	    Calculation:
             
