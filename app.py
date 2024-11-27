@@ -302,7 +302,7 @@ Here is the input data:
 
 **Instructions:**  
 - Use this data to forecast values for the period 2025–2029.  
-- Provide a table with forecasted revenues, expenditures, and sector-wise expenses.  
+- Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
 - Include brief calculations, key assumptions, and a concise summary of the forecast.  
 
 Format the response as follows:  
@@ -326,7 +326,7 @@ Format the response as follows:
             """
 			
 # Combine the system prompt with the user question
-            prompt = f"{system_prompt}\n\n{user_question}"
+            prompt = f"{system_prompt}\n\nUser Question:{user_question}"
 # Generate content using the image
             print("Model generate")
             # st.write(prompt)
