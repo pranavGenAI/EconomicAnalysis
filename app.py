@@ -358,7 +358,7 @@ def main():
 
         # Document tab
         with tabs[0]:
-            uploaded_images = ["C:/Users/pranav.baviskar/Downloads/learning/KSAEco.png"]
+            uploaded_images = ["KSAEco.png"]
             user_question = st.text_input("Ask a Question", key="user_question")
             #st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
 
