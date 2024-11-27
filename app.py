@@ -7,6 +7,7 @@ import json
 import pandas as pd
 from fuzzywuzzy import fuzz  # Import the fuzzy matching function
 import re
+import matplotlib.pyplot as plt
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
 background_html = """
@@ -318,6 +319,41 @@ def generate_content_1(resp):
             response_1 = model.generate_content(prompt, stream=True)
             response_1.resolve()
             print("Response text", response_1.text)
+		
+	# Parse the JSON response
+            data = json.loads(json_response)
+            
+            # Extract the forecast data into a DataFrame
+            df = pd.DataFrame(data['forecast'])
+            
+            # Display the DataFrame in Streamlit
+            st.subheader("Forecast Table")
+            st.write(df)
+            
+            # Plot the data using Matplotlib
+            st.subheader("Forecast Plot")
+            plt.figure(figsize=(10, 6))
+            
+            # Plot each sector's data
+            for column in df.columns[1:]:  # Skip the "year" column
+                plt.plot(df['year'], df[column], label=column)
+            
+            # Customize the plot
+            plt.title('Economic Forecast (2025-2029)')
+            plt.xlabel('Year')
+            plt.ylabel('Expenditure (in units)')
+            plt.legend()
+            plt.grid(True)
+            
+            # Display the plot in Streamlit
+            st.pyplot(plt)
+            
+            # Display assumptions and summary
+            st.subheader("Assumptions")
+            st.write(data['assumptions'])
+            
+            st.subheader("Summary")
+            st.write(data['summary'])
             st.write(response_1.text)
             return response_1.text  # Return generated text
         except Exception as e:
@@ -328,6 +364,7 @@ def generate_content_1(resp):
     
     # Return None if all retries fail
     return None
+	
 def main():
     st.markdown("")
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
