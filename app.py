@@ -188,7 +188,7 @@ st.markdown("""
         }
     </style>
     <p class="animated-gradient-text">
-        Bid Creation Bot : Generates Bid Document!
+        Economic Forecast Bot!
     </p>
 """, unsafe_allow_html=True)
 
