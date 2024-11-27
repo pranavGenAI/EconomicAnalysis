@@ -244,7 +244,7 @@ logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.p
 
 def generate_content(user_question,image):
     max_retries = 10
-    delay = 10
+    delay = 5
     retry_count = 0
     while retry_count < max_retries:
         try:
