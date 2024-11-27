@@ -312,8 +312,11 @@ def generate_content(user_question,image):
         st.write("Extracted Table Text:")
         st.text(table_text)  # Display raw table text for debugging
         
-        # Clean up the table text by removing extra spaces
+        # Clean up the table text by removing extra spaces and ensuring proper row splitting
         table_text_cleaned = "\n".join([line.strip() for line in table_text.split("\n") if line.strip()])  # Remove extra spaces
+        
+        # Further clean the columns and rows to make sure they align properly
+        table_text_cleaned = table_text_cleaned.replace(" |", "|").replace("| ", "|")  # Fix space around separators
         
         # Try reading the table into a DataFrame
         try:
