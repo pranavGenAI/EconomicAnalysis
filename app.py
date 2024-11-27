@@ -251,7 +251,7 @@ def generate_content(user_question,image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. Response format should be 
+            system_prompt = """You are provided with economic data. If the user requests a forecast, create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include brief calculations, brief key assumptions, and a concise summary at the end. Sectors are: Public Administration, Military, Security and Regional Administration, Municipal Services, Education, Health and Social Development, Economic Resources, Infrastructure and Transportation, and General Items. Ensure the response is clear, precise, and includes only the forecast table, assumptions, and summary. Response format should be 
             Assumptions:
             
             Table:
@@ -274,6 +274,30 @@ def generate_content(user_question,image):
             response = model.generate_content([prompt, image], stream=True)
             response.resolve()
             print("Response text", response.text)
+            table_start = response_text.find("Table:") + len("Table:")
+            table_end = response_text.find("Summary:")  # Optional marker for the end
+            table_text = response_text[table_start:table_end].strip()
+
+                        # Parse the table into a DataFrame
+            df = pd.read_csv(StringIO(table_text), sep="|").dropna(axis=1, how="all").drop(index=0).reset_index(drop=True)
+            df.columns = [col.strip() for col in df.columns]  # Clean column names
+            df = df.apply(pd.to_numeric, errors="ignore")  # Convert numeric columns
+            
+            # Print the parsed DataFrame
+            print("\nParsed Forecast Table:")
+            print(df)
+            
+            # Plot the data
+            plt.figure(figsize=(10, 6))
+            for column in df.columns[1:]:  # Skip the "Year" column
+                plt.plot(df["Year"], df[column], label=column)
+            
+            plt.title("Economic Forecast (2025-2029)")
+            plt.xlabel("Year")
+            plt.ylabel("Value (in units)")
+            plt.legend()
+            plt.grid()
+            plt.show()
             return response.text  # Return generated text
         except Exception as e:
             retry_count += 1
