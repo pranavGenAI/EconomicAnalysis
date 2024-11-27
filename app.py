@@ -344,6 +344,47 @@ Format the response as follows:
     # Return None if all retries fail
     return None
 
+def generate_content_1(resp):
+    max_retries = 10
+    delay = 5
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            # Initialize the GenerativeModel
+            print("Model definition")
+            model = genai.GenerativeModel('gemini-1.5-pro')
+            system_prompt = """Convert the input table into the json format like below:
+	{
+	  "forecast": [
+	    {"year": 2025, "Cateogry": 825, "Cateogry": 103, "Cateogry": 215, "Cateogry": 124},
+	    {"year": 2026, "Cateogry": 851, "Cateogry": 108, "Cateogry": 229, "Cateogry": 131},
+	    {"year": 2027, "Cateogry": 878, "Cateogry": 114, "Cateogry": 243, "Cateogry": 139},
+	    {"year": 2028, "Cateogry": 906, "Cateogry": 120, "Cateogry": 258, "Cateogry": 147},
+	    {"year": 2029, "Cateogry": 935, "Cateogry": 126, "Cateogry": 274, "Cateogry": 155}
+	  ],
+	  "assumptions": ["", ""],
+	  "summary": ""
+	}
+            """
+			
+# Combine the system prompt with the user question
+            prompt = f"{system_prompt}\n\nInput text:{resp}"
+# Generate content using the image
+            print("Model generate")
+            # st.write(prompt)
+            response_1 = model.generate_content(prompt, stream=True)
+            response_1.resolve()
+            st.write(response_1.text)
+            return response_1.text  # Return generated text
+        except Exception as e:
+            retry_count += 1
+            if retry_count == max_retries:
+                st.error(f"Error generating content: Server not available. Please try again after sometime")
+            time.sleep(delay)
+    
+    # Return None if all retries fail
+    return None
+
 def main():
     st.markdown("")
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
@@ -380,6 +421,7 @@ def main():
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
                             generated_text = generate_content(user_question,image)  # Generate content from image
+                            generated_text_1 = generate_content_1(generated_text)
 
                    
         # System tab
