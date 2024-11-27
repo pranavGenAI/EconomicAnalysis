@@ -259,13 +259,17 @@ def generate_content(user_question,image):
             Assumptions:
             
             Table:
-            | Year | Public Administration | Military | Education | Health |
-            |------|------------------------|----------|-----------|--------|
-            | 2025 | 500                   | 400      | 300       | 200    |
-            | 2026 | 520                   | 410      | 320       | 210    |
-            | 2027 | 540                   | 420      | 340       | 220    |
-            | 2028 | 560                   | 430      | 360       | 230    |
-            | 2029 | 580                   | 440      | 380       | 240    |
+| Sector                          | 2025  | 2026  | 2027  | 2028  | 2029  |
+|----------------------------------|-------|-------|-------|-------|-------|
+| Public Administration            | 500   | 520   | 540   | 560   | 580   |
+| Military                         | 400   | 410   | 420   | 430   | 440   |
+| Education                        | 300   | 320   | 340   | 360   | 380   |
+| Health                           | 200   | 210   | 220   | 230   | 240   |
+| Security & Regional Admin        | 150   | 155   | 160   | 165   | 170   |
+| Municipal Services               | 120   | 125   | 130   | 135   | 140   |
+| Economic Resources               | 180   | 185   | 190   | 195   | 200   |
+| Infrastructure & Transport       | 210   | 220   | 230   | 240   | 250   |
+| General Items                    | 100   | 105   | 110   | 115   | 120   |
             
             Summary:
             """
