@@ -287,7 +287,47 @@ def generate_content(user_question,image):
     
     # Return None if all retries fail
     return None
-
+def generate_content_1(resp):
+    max_retries = 10
+    delay = 10
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            # Initialize the GenerativeModel
+            print("Model definition")
+            model = genai.GenerativeModel('gemini-1.5-pro')
+            system_prompt = """Convert the input table into the json format like below:
+{
+  "forecast": [
+    {"year": 2025, "Column Header": 825, "Column Header": 103, "Column Header": 215, "Column Header": 124},
+    {"year": 2026, "Column Header": 851, "Column Header": 108, "Column Header": 229, "Column Header": 131},
+    {"year": 2027, "Column Header": 878, "Column Header": 114, "Column Header": 243, "Column Header": 139},
+    {"year": 2028, "Column Header": 906, "Column Header": 120, "Column Header": 258, "Column Header": 147},
+    {"year": 2029, "Column Header": 935, "Column Header": 126, "Column Header": 274, "Column Header": 155}
+  ],
+  "assumptions": ["", ""],
+  "summary": ""
+}
+            """
+			
+# Combine the system prompt with the user question
+            prompt = f"{system_prompt}\n\n{resp}"
+# Generate content using the image
+            print("Model generate")
+            # st.write(prompt)
+            response_1 = model.generate_content(prompt, stream=True)
+            response_1.resolve()
+            print("Response text", response_1.text)
+	        st.write(response_1.text)
+            return response_1.text  # Return generated text
+        except Exception as e:
+            retry_count += 1
+            if retry_count == max_retries:
+                st.error(f"Error generating content: Server not available. Please try again after sometime")
+            time.sleep(delay)
+    
+    # Return None if all retries fail
+    return None
 def main():
     st.markdown("")
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
@@ -324,7 +364,7 @@ def main():
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
                             generated_text = generate_content(user_question,image)  # Generate content from image
-
+                            generated_text_1 = generate_content_1(generated_text)  # Generate content from image
                    
         # System tab
         with tabs[1]:
