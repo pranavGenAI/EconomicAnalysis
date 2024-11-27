@@ -251,19 +251,7 @@ def generate_content(image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            prompt = """You have been given contract document as input. Perform the following validations:
-            1. Contract Number 
-            2. Check if date is within COVID period (Jan 2020 to July 2023) if the document is invoice
-            3. Check if the department in To is NYS department of health
-            4. Extract vendor name
-            5. Validate if contractor signature is present
-            6. Validate if officer signature is present 
-            7. Extract Original contract start and end date
-            8. Extract New contract start and end date
-            9. Contract Value 
-
-            Return a json with below keys: Contract Number, Within COVID: (Yes/No), Addressed to NYDOH: (Yes/No), Vendor/Merchant, Contractor Signature Present: (Yes/No), Officer Signature Present: (Yes/No), Original Contract Start Date, Original Contract End Date, New Contract Start Date, New Contract End Date, Contract Value
-            If any of the above value is missing just return blank
+            prompt = """You have been given the economic data over a period as a context. Use it to answer user questions. Try your best to be as accurate as possible.
             """
             # Generate content using the image
             print("Model generate")
@@ -346,7 +334,7 @@ def main():
 
         # System tab
         with tabs[1]:
-            excel_file = "Invoice processing.xlsx"  # Ensure this file is in your working directory
+            excel_file = "KSAEcoData.xlsx"  # Ensure this file is in your working directory
             try:
                 df = pd.read_excel(excel_file)  # Read the Excel file
                 st.dataframe(df)  # Display the data as a table
@@ -356,98 +344,8 @@ def main():
     # Display extraction result in col3, separate from col1
     with col3:
         if generated_text:
-            try:
-                # Extract and parse the JSON response
-                json_str = generated_text.strip().split('\n', 1)[-1].replace("```json", "").replace("```", "").strip()
-                extracted_data = json.loads(json_str)  # Use json.loads to parse
-
-                # Display extracted data in bullet format
-                st.markdown("### Extraction Result:")
-                for key in ["Within COVID", "Addressed to NYDOH", "Contractor Signature Present", "Officer Signature Present"]:
-                    if key in extracted_data:
-                        st.markdown(f"- **{key}**: {extracted_data[key]}")  # Format each key-value pair as a bullet point
-
-                # Extract contract number
-                contract_number = extracted_data.get("Contract Number", "")
-
-                # Find the row in the Excel DataFrame for the contract number
-                if not df.empty and contract_number:
-                    contract_row = df[df['Contract Number'] == contract_number]
-
-                    if not contract_row.empty:
-                        keys_of_interest = [
-                            "Vendor/Merchant",
-                            "Original Contract Start Date",
-                            "Original Contract End Date",
-                            "New Contract Start Date",
-                            "New Contract End Date",
-                            "Contract Value"
-                        ]
-
-                        # Extract values for the specified keys from the JSON and Excel DataFrame
-                        values_from_excel = []
-                        extracted_values = []
-
-                        for key in keys_of_interest:
-                            if key in extracted_data:
-                                extracted_values.append(extracted_data[key])  # From extracted data
-                            else:
-                                extracted_values.append("")  # Placeholder if the key is not found
-
-                            if key in contract_row.columns:
-                                values_from_excel.append(contract_row.iloc[0][key])  # From Excel
-                            else:
-                                values_from_excel.append("")  # Placeholder if the key is not found
-
-                        # Use the AI model to generate comparison results
-                        comparison_results = generate_compare_genAI(extracted_values, values_from_excel, keys_of_interest)
-                        col1, col2, col3,col4 = st.columns([0.3, 0.3, 0.3, 0.1])
-                        col1.write("Parameter")
-                        col2.write("Extracted Value")
-                        col3.write("System Data")
-                        col4.write(" ")
-                        # Display each key, value, and checkbox in a row
-                        k = 0
-                        for key, value in comparison_results.items():
-                            checkbox_default = value == "Yes"
-                            col1, col2, col3, col4 = st.columns([0.3, 0.3, 0.3, 0.1])
-                            col1.write(keys_of_interest[k])
-                            col2.write(extracted_values[k])
-                            col3.write(values_from_excel[k])
-                            checkbox = col4.checkbox("", value=checkbox_default, key=key)
-                            k = k + 1
-                        # Initialize checkbox states in session_state if not already done
-                        # if 'checkbox_states' not in st.session_state:
-                            # st.session_state.checkbox_states = {key: (comparison_results.get(key, "No") == "Yes") for key in keys_of_interest}
-
-                        # # Add checkboxes directly to the DataFrame
-                        # editable_df = pd.DataFrame({
-                        #     'Keys': keys_of_interest,
-                        #     'Values from System': values_from_excel,
-                        #     'Extracted Information': extracted_values
-                        # })
-
-                        # editable_df['Match'] = [
-                        #     st.checkbox(f"Match for {key}", value=st.session_state.checkbox_states.get(key, False), key=f"checkbox_{key}") 
-                        #     for key in keys_of_interest
-                        # ]
-
-                        # # Update session state based on user input
-                        # for key in keys_of_interest:
-                        #     st.session_state.checkbox_states[key] = editable_df['Match'][keys_of_interest.index(key)]
-
-                        # # Display the DataFrame with checkboxes
-                        # st.dataframe(editable_df, use_container_width=True)
-
-                    else:
-                        st.warning(f"No data found for contract number: {contract_number}")
-                else:
-                    st.warning("Contract number not found in the Excel file.")
-
-            except json.JSONDecodeError as e:
-                st.error(f"Failed to parse generated text as JSON: {e}. Please check the output.")
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+            st.markdown("### Response:")
+            st.write(generated_text)
 
                 
 if __name__ == "__main__":
