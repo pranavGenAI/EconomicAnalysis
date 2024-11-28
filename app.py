@@ -8,6 +8,8 @@ import pandas as pd
 from fuzzywuzzy import fuzz  # Import the fuzzy matching function
 import re
 import matplotlib.pyplot as plt
+import os
+from groq import Groq
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
 background_html = """
@@ -193,9 +195,6 @@ st.markdown("""
     </p>
 """, unsafe_allow_html=True)
 
-
-
-
 # st.markdown("""
 #     <style>
 #         .css-1d391kg {  /* This is the default Streamlit header class */
@@ -215,8 +214,12 @@ if "username" not in st.session_state:
 
 # Configure Google Generative AI with the API key
 #GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
-GOOGLE_API_KEY = "AIzaSyCAh0Ed38QtD8KwE_-hhRgn_n-IIntdTI0"
-genai.configure(api_key=GOOGLE_API_KEY)
+# GOOGLE_API_KEY = "AIzaSyCAh0Ed38QtD8KwE_-hhRgn_n-IIntdTI0"
+# #genai.configure(api_key=GOOGLE_API_KEY)
+client = Groq(
+    # This is the default and can be omitted
+    api_key="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",
+)
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -263,82 +266,83 @@ def generate_content(user_question,image):
     while retry_count < max_retries:
         try:
             # Initialize the GenerativeModel
-            print("Model definition")
-            model = genai.GenerativeModel('gemini-1.5-pro')
-            system_prompt = """
-	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
-Here is the input data:
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": """
+            You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
+            Here is the input data:
 
-**Revenues**  
-| Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-|------------------------------------------------|-------|-------|-------|-------|-------|-------|-------|  
-| Total Revenues                                 | 906   | 917   | 782   | 965   | 1,268 | 1,193 | 1,172 |  
-| Taxes on Income, Profits, and Capital Gains    | 17    | 16    | 18    | 18    | 24    | 36    | 31    |  
-| Taxes on Goods and Services                    | 115   | 141   | 163   | 251   | 251   | 264   | 279   |  
-| Taxes on International Trade and Transactions  | 16    | 17    | 18    | 19    | 19    | 20    | 21    |  
-| Other Taxes                                    | 21    | 29    | 27    | 29    | 28    | 32    | 30    |  
-| Other Revenues                                 | 737   | 714   | 555   | 648   | 945   | 841   | 812   |  
+            **Revenues**  
+            | Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+            |------------------------------------------------|-------|-------|-------|-------|-------|-------|-------|  
+            | Total Revenues                                 | 906   | 917   | 782   | 965   | 1,268 | 1,193 | 1,172 |  
+            | Taxes on Income, Profits, and Capital Gains    | 17    | 16    | 18    | 18    | 24    | 36    | 31    |  
+            | Taxes on Goods and Services                    | 115   | 141   | 163   | 251   | 251   | 264   | 279   |  
+            | Taxes on International Trade and Transactions  | 16    | 17    | 18    | 19    | 19    | 20    | 21    |  
+            | Other Taxes                                    | 21    | 29    | 27    | 29    | 28    | 32    | 30    |  
+            | Other Revenues                                 | 737   | 714   | 555   | 648   | 945   | 841   | 812   |  
 
-**Expenditures**  
-| Category                   | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-|----------------------------|-------|-------|-------|-------|-------|-------|-------|  
-| Total Expenditures         | 1,079 | 1,048 | 1,076 | 1,039 | 1,164 | 1,275 | 1,251 |  
-| Compensation of Employees  | 484   | 504   | 495   | 496   | 513   | 536   | 544   |  
-| Use of Goods and Services  | 169   | 164   | 203   | 205   | 258   | 272   | 277   |  
-| Financing Expenses         | 15    | 21    | 24    | 27    | 30    | 39    | 47    |  
-| Subsidies                  | 13    | 22    | 28    | 30    | 30    | 20    | 38    |  
-| Grants                     | 4     | 1     | 4     | 3     | 3     | 7     | 4     |  
-| Social Benefits            | 84    | 77    | 69    | 70    | 79    | 97    | 62    |  
-| Other Expenses             | 122   | 87    | 97    | 91    | 107   | 101   | 91    |  
-| Non-financial assets (CAPEX)| 188   | 172   | 155   | 117   | 143   | 203   | 189   |  
+            **Expenditures**  
+            | Category                   | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+            |----------------------------|-------|-------|-------|-------|-------|-------|-------|  
+            | Total Expenditures         | 1,079 | 1,048 | 1,076 | 1,039 | 1,164 | 1,275 | 1,251 |  
+            | Compensation of Employees  | 484   | 504   | 495   | 496   | 513   | 536   | 544   |  
+            | Use of Goods and Services  | 169   | 164   | 203   | 205   | 258   | 272   | 277   |  
+            | Financing Expenses         | 15    | 21    | 24    | 27    | 30    | 39    | 47    |  
+            | Subsidies                  | 13    | 22    | 28    | 30    | 30    | 20    | 38    |  
+            | Grants                     | 4     | 1     | 4     | 3     | 3     | 7     | 4     |  
+            | Social Benefits            | 84    | 77    | 69    | 70    | 79    | 97    | 62    |  
+            | Other Expenses             | 122   | 87    | 97    | 91    | 107   | 101   | 91    |  
+            | Non-financial assets (CAPEX)| 188   | 172   | 155   | 117   | 143   | 203   | 189   |  
 
-**Expense by Sector**  
-| Sector                          | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-|---------------------------------|-------|-------|-------|-------|-------|-------|-------|  
-| Public Administration           | 31    | 29    | 36    | 34    | 41    | 45    | 43    |  
-| Military                        | 242   | 198   | 204   | 202   | 228   | 248   | 269   |  
-| Security and Regional Admin.    | 113   | 104   | 115   | 106   | 115   | 110   | 112   |  
-| Municipal Services              | 46    | 59    | 47    | 39    | 75    | 87    | 81    |  
-| Education                       | 209   | 202   | 205   | 192   | 202   | 202   | 195   |  
-| Health and Social Development   | 175   | 174   | 190   | 197   | 227   | 250   | 214   |  
-| Economic Resources              | 105   | 99    | 61    | 71    | 77    | 80    | 84    |  
-| Infrastructure and Transportation| 49    | 62    | 60    | 51    | 41    | 37    | 38    |  
-| General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
+            **Expense by Sector**  
+            | Sector                          | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+            |---------------------------------|-------|-------|-------|-------|-------|-------|-------|  
+            | Public Administration           | 31    | 29    | 36    | 34    | 41    | 45    | 43    |  
+            | Military                        | 242   | 198   | 204   | 202   | 228   | 248   | 269   |  
+            | Security and Regional Admin.    | 113   | 104   | 115   | 106   | 115   | 110   | 112   |  
+            | Municipal Services              | 46    | 59    | 47    | 39    | 75    | 87    | 81    |  
+            | Education                       | 209   | 202   | 205   | 192   | 202   | 202   | 195   |  
+            | Health and Social Development   | 175   | 174   | 190   | 197   | 227   | 250   | 214   |  
+            | Economic Resources              | 105   | 99    | 61    | 71    | 77    | 80    | 84    |  
+            | Infrastructure and Transportation| 49    | 62    | 60    | 51    | 41    | 37    | 38    |  
+            | General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
 
-**Instructions:**  
-- Use this data to forecast values for the period 2025–2029.  
-- Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
-- Include brief calculations, key assumptions, and a concise summary of the forecast.  
+            **Instructions:**  
+            - Use this data to forecast values for the period 2025–2029.  
+            - Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
+            - Include brief calculations, key assumptions, and a concise summary of the forecast.  
 
-Format the response as follows:  
+            Format the response as follows:  
 
-**Assumptions:**  
-- [List the key assumptions used.]  
+            **Assumptions:**  
+            - [List the key assumptions used.]  
 
-**Table:**  
-| Category                           | 2025  | 2026  | 2027  | 2028  | 2029  |  
-|------------------------------------|-------|-------|-------|-------|-------|  
-| Public Administration              | ...   | ...   | ...   | ...   | ...   |  
-| Military                           | ...   | ...   | ...   | ...   | ...   |  
-| ...                                | ...   | ...   | ...   | ...   | ...   |  
-Change years, category and value as per user question 
-**Calculations:**  
-- [Provide a brief explanation of how the forecast values were derived.]  
+            **Table:**  
+            | Category                           | 2025  | 2026  | 2027  | 2028  | 2029  |  
+            |------------------------------------|-------|-------|-------|-------|-------|  
+            | Public Administration              | ...   | ...   | ...   | ...   | ...   |  
+            | Military                           | ...   | ...   | ...   | ...   | ...   |  
+            | ...                                | ...   | ...   | ...   | ...   | ...   |  
+            Change years, category and value as per user question 
+            **Calculations:**  
+            - [Provide a brief explanation of how the forecast values were derived.]  
 
-**Summary:**  
-- [Provide a concise summary highlighting key trends and findings.]  
-
+            **Summary:**  
+            - [Provide a concise summary highlighting key trends and findings.]  
             """
+                    },
+                    {
+                        "role": "user",
+                        "content": "Show expense forecast by sector",
+                    }
+                ],
+                model="llama-3.1-70b-versatile",
+            )
 			
-# Combine the system prompt with the user question
-            prompt = f"{system_prompt}\n\nUser Question:{user_question}"
-# Generate content using the image
-            print("prompt")
-            # st.write(prompt)
-            response = model.generate_content(prompt, stream=True)
-            response.resolve()
-            print("Response text", response.text)
-            return response.text  # Return generated text
+            return chat_completion.choices[0].message.content  # Return generated text
         except Exception as e:
             st.error(f"Error: {e}")
             retry_count += 1
