@@ -515,7 +515,7 @@ def main():
                             generated_text = generate_content(user_question,image, model)  # Generate content from image
 
         with tabs[1]:
-            col4, col5, col6, col8 = st.columns([2.5, 2, 2.5,2])
+            col4, col5, col6, col8 = st.columns([1.5, 2, 1.5,2])
             with col4:
                 inflation = st.text_input("Inflation %",value="1.9", key="inflation")
                 interest = st.text_input("Interest Rate",value="5.25", key="interest")
