@@ -273,7 +273,7 @@ def logout():
 logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png"
 st.sidebar.title('Customization')
 
-def generate_content(user_question,image):
+def generate_content(user_question,image, model):
     conversational_memory_length = 5
     memory = ConversationBufferWindowMemory(k=conversational_memory_length, memory_key="chat_history", return_messages=True)
 
@@ -435,7 +435,7 @@ def main():
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(user_question,image)  # Generate content from image
+                            generated_text = generate_content(user_question,image, model)  # Generate content from image
 
         with tabs[1]:
             col4, col5, col6, col7, col8 = st.columns([3, 2, 3,2,2])
