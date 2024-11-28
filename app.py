@@ -383,7 +383,7 @@ def main():
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(user_question, inflation, interest, Population_growth, alpha, beta,image)  # Generate content from image
+                            generated_text = generate_content(user_question,image)  # Generate content from image
 
         with tabs[1]:
             col4, col5, col6, col7, col8 = st.columns([3, 2, 3,2,2])
