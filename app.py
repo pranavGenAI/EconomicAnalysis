@@ -387,7 +387,7 @@ Change years, category and value as per user question
             memory=memory,  # The conversational memory object that stores and manages the conversation history.
         )
         
-        response = conversation.predict(human_input=user_question)
+        response = conversation.predict(user_question=user_question)
         message = {'human':user_question,'AI':response}
         st.session_state.chat_history.append(message)
         
