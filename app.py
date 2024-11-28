@@ -394,7 +394,7 @@ Change years, category and value as per user question
         prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessage(
-                    content=""" Convert the complete input data table to JSON format like below and return only 1 JSON with all values from input. Remember to not return anything else apart from JSON. Only respond with Json and no other wording.:
+                    content=""" Convert the complete input data table to JSON format like below and return only 1 JSON with all values from input. Remember to not return anything else apart from JSON. Only respond with Json and no other wording. Understand ask from user question and populate only that data in json. Use Question: {user_question}. Sample JSON format:
                      {
     "forecast": [
         {
