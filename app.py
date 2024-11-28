@@ -305,7 +305,7 @@ def generate_content(user_question,image, model):
             [
                 SystemMessage(
                     content="""
-	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
+	    You are provided with historical economic data for revenues, expenditures, and expenses by sector in billion dollar from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
 Here is the input data:
 
 **Revenues**  
@@ -442,7 +442,7 @@ Change years, category and value as per user question
         response_json = conversation.predict(response=response)
         st.write(response_json)
         data = json.loads(response_json)
-# Ensure "forecast" exists in the data
+        # Ensure "forecast" exists in the data
         if "forecast" in data:
             df = pd.DataFrame(data["forecast"])
 
@@ -458,12 +458,14 @@ Change years, category and value as per user question
             plt.grid(alpha=0.3)
             plt.tight_layout()
 
-            # Show the plot
-            plt.show()
+            # Display the plot in Streamlit
+            st.pyplot(plt)
+
+            # Optionally display the DataFrame in Streamlit
+            st.write("Forecasted Data Table:")
+            st.dataframe(df)
         else:
             st.write("The forecast data is not available in the response.")
-
-    return response
 
 def main():
     st.markdown("")
