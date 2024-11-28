@@ -12,3 +12,6 @@ openpyxl
 PyPDF2
 fuzzywuzzy
 groq
+langchain
+langchain-core
+langchain-groq
