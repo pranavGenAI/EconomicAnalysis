@@ -305,7 +305,7 @@ def generate_content(user_question,image, model):
             [
                 SystemMessage(
                     content="""
-	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses and only 1 table.
+	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
 Here is the input data:
 
 **Revenues**  
@@ -395,7 +395,7 @@ Change years, category and value as per user question
         prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessage(
-                    content=""" Convert the input data table to JSON format like sample shown below and return only 1 Json output with complete table converted to json like below. Remember to include all the data available in the input text:
+                    content=""" Convert the input data table to JSON format like below:
                      {
     "forecast": [
         {
@@ -442,6 +442,23 @@ Change years, category and value as per user question
         
         response_json = conversation.predict(response=response)
         st.write(response_json)
+        data = response_json
+        df = pd.DataFrame(data["forecast"])
+        # Plot each category
+        plt.figure(figsize=(12, 6))
+        for column in df.columns[1:]:
+            plt.plot(df["year"], df[column], label=column)
+
+        # Add labels, title, legend, and grid
+        plt.xlabel("Year", fontsize=12)
+        plt.ylabel("Expense (in units)", fontsize=12)
+        plt.legend(title="", bbox_to_anchor=(1.05, 1), loc="upper left")
+        plt.grid(alpha=0.3)
+        plt.tight_layout()
+
+        # Show the plot
+        plt.show()
+
     return response
 
 def main():
