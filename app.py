@@ -10,6 +10,18 @@ import re
 import matplotlib.pyplot as plt
 import os
 from groq import Groq
+import random
+from langchain.chains import ConversationChain, LLMChain
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain_core.messages import SystemMessage
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain_groq import ChatGroq
+from langchain.prompts import PromptTemplate
+
 # Set page title, icon, and dark theme
 st.set_page_config(page_title="Fiscal Forecasting", page_icon=">", layout="wide")
 background_html = """
@@ -216,10 +228,11 @@ if "username" not in st.session_state:
 #GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
 # GOOGLE_API_KEY = "AIzaSyCAh0Ed38QtD8KwE_-hhRgn_n-IIntdTI0"
 # #genai.configure(api_key=GOOGLE_API_KEY)
-client = Groq(
-    # This is the default and can be omitted
-    api_key="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",
-)
+groq_api_key = "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"
+    # Display the Groq logo
+spacer, col = st.columns([5, 1])  
+with col:  
+	st.image('https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png')
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -258,100 +271,132 @@ def logout():
 
 # Path to the logo image
 logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png"
+st.sidebar.title('Customization')
 
 def generate_content(user_question,image):
-    max_retries = 10
-    delay = 10
-    retry_count = 0
-    while retry_count < max_retries:
-        try:
-            # Initialize the GenerativeModel
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """
-            You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
-            Here is the input data:
+    model = st.sidebar.selectbox(
+	'Choose a model',
+	['llama-3.1-70b-versatile', 'llama-3.1-70b-specdec', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it']
+    )
+    conversational_memory_length = 5
+    memory = ConversationBufferWindowMemory(k=conversational_memory_length, memory_key="chat_history", return_messages=True)
 
-            **Revenues**  
-            | Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-            |------------------------------------------------|-------|-------|-------|-------|-------|-------|-------|  
-            | Total Revenues                                 | 906   | 917   | 782   | 965   | 1,268 | 1,193 | 1,172 |  
-            | Taxes on Income, Profits, and Capital Gains    | 17    | 16    | 18    | 18    | 24    | 36    | 31    |  
-            | Taxes on Goods and Services                    | 115   | 141   | 163   | 251   | 251   | 264   | 279   |  
-            | Taxes on International Trade and Transactions  | 16    | 17    | 18    | 19    | 19    | 20    | 21    |  
-            | Other Taxes                                    | 21    | 29    | 27    | 29    | 28    | 32    | 30    |  
-            | Other Revenues                                 | 737   | 714   | 555   | 648   | 945   | 841   | 812   |  
+    # session state variable
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history=[]
+    else:
+        for message in st.session_state.chat_history:
+            memory.save_context(
+                {'input':message['human']},
+                {'output':message['AI']}
+                )
+            system_prompt = """
+	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
+Here is the input data:
 
-            **Expenditures**  
-            | Category                   | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-            |----------------------------|-------|-------|-------|-------|-------|-------|-------|  
-            | Total Expenditures         | 1,079 | 1,048 | 1,076 | 1,039 | 1,164 | 1,275 | 1,251 |  
-            | Compensation of Employees  | 484   | 504   | 495   | 496   | 513   | 536   | 544   |  
-            | Use of Goods and Services  | 169   | 164   | 203   | 205   | 258   | 272   | 277   |  
-            | Financing Expenses         | 15    | 21    | 24    | 27    | 30    | 39    | 47    |  
-            | Subsidies                  | 13    | 22    | 28    | 30    | 30    | 20    | 38    |  
-            | Grants                     | 4     | 1     | 4     | 3     | 3     | 7     | 4     |  
-            | Social Benefits            | 84    | 77    | 69    | 70    | 79    | 97    | 62    |  
-            | Other Expenses             | 122   | 87    | 97    | 91    | 107   | 101   | 91    |  
-            | Non-financial assets (CAPEX)| 188   | 172   | 155   | 117   | 143   | 203   | 189   |  
+**Revenues**  
+| Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+|------------------------------------------------|-------|-------|-------|-------|-------|-------|-------|  
+| Total Revenues                                 | 906   | 917   | 782   | 965   | 1,268 | 1,193 | 1,172 |  
+| Taxes on Income, Profits, and Capital Gains    | 17    | 16    | 18    | 18    | 24    | 36    | 31    |  
+| Taxes on Goods and Services                    | 115   | 141   | 163   | 251   | 251   | 264   | 279   |  
+| Taxes on International Trade and Transactions  | 16    | 17    | 18    | 19    | 19    | 20    | 21    |  
+| Other Taxes                                    | 21    | 29    | 27    | 29    | 28    | 32    | 30    |  
+| Other Revenues                                 | 737   | 714   | 555   | 648   | 945   | 841   | 812   |  
 
-            **Expense by Sector**  
-            | Sector                          | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
-            |---------------------------------|-------|-------|-------|-------|-------|-------|-------|  
-            | Public Administration           | 31    | 29    | 36    | 34    | 41    | 45    | 43    |  
-            | Military                        | 242   | 198   | 204   | 202   | 228   | 248   | 269   |  
-            | Security and Regional Admin.    | 113   | 104   | 115   | 106   | 115   | 110   | 112   |  
-            | Municipal Services              | 46    | 59    | 47    | 39    | 75    | 87    | 81    |  
-            | Education                       | 209   | 202   | 205   | 192   | 202   | 202   | 195   |  
-            | Health and Social Development   | 175   | 174   | 190   | 197   | 227   | 250   | 214   |  
-            | Economic Resources              | 105   | 99    | 61    | 71    | 77    | 80    | 84    |  
-            | Infrastructure and Transportation| 49    | 62    | 60    | 51    | 41    | 37    | 38    |  
-            | General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
+**Expenditures**  
+| Category                   | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+|----------------------------|-------|-------|-------|-------|-------|-------|-------|  
+| Total Expenditures         | 1,079 | 1,048 | 1,076 | 1,039 | 1,164 | 1,275 | 1,251 |  
+| Compensation of Employees  | 484   | 504   | 495   | 496   | 513   | 536   | 544   |  
+| Use of Goods and Services  | 169   | 164   | 203   | 205   | 258   | 272   | 277   |  
+| Financing Expenses         | 15    | 21    | 24    | 27    | 30    | 39    | 47    |  
+| Subsidies                  | 13    | 22    | 28    | 30    | 30    | 20    | 38    |  
+| Grants                     | 4     | 1     | 4     | 3     | 3     | 7     | 4     |  
+| Social Benefits            | 84    | 77    | 69    | 70    | 79    | 97    | 62    |  
+| Other Expenses             | 122   | 87    | 97    | 91    | 107   | 101   | 91    |  
+| Non-financial assets (CAPEX)| 188   | 172   | 155   | 117   | 143   | 203   | 189   |  
 
-            **Instructions:**  
-            - Use this data to forecast values for the period 2025–2029.  
-            - Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
-            - Include brief calculations, key assumptions, and a concise summary of the forecast.  
+**Expense by Sector**  
+| Sector                          | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
+|---------------------------------|-------|-------|-------|-------|-------|-------|-------|  
+| Public Administration           | 31    | 29    | 36    | 34    | 41    | 45    | 43    |  
+| Military                        | 242   | 198   | 204   | 202   | 228   | 248   | 269   |  
+| Security and Regional Admin.    | 113   | 104   | 115   | 106   | 115   | 110   | 112   |  
+| Municipal Services              | 46    | 59    | 47    | 39    | 75    | 87    | 81    |  
+| Education                       | 209   | 202   | 205   | 192   | 202   | 202   | 195   |  
+| Health and Social Development   | 175   | 174   | 190   | 197   | 227   | 250   | 214   |  
+| Economic Resources              | 105   | 99    | 61    | 71    | 77    | 80    | 84    |  
+| Infrastructure and Transportation| 49    | 62    | 60    | 51    | 41    | 37    | 38    |  
+| General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
 
-            Format the response as follows:  
+**Instructions:**  
+- Use this data to forecast values for the period 2025–2029.  
+- Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
+- Include brief calculations, key assumptions, and a concise summary of the forecast.  
 
-            **Assumptions:**  
-            - [List the key assumptions used.]  
+Format the response as follows:  
 
-            **Table:**  
-            | Category                           | 2025  | 2026  | 2027  | 2028  | 2029  |  
-            |------------------------------------|-------|-------|-------|-------|-------|  
-            | Public Administration              | ...   | ...   | ...   | ...   | ...   |  
-            | Military                           | ...   | ...   | ...   | ...   | ...   |  
-            | ...                                | ...   | ...   | ...   | ...   | ...   |  
-            Change years, category and value as per user question 
-            **Calculations:**  
-            - [Provide a brief explanation of how the forecast values were derived.]  
+**Assumptions:**  
+- [List the key assumptions used.]  
 
-            **Summary:**  
-            - [Provide a concise summary highlighting key trends and findings.]  
+**Table:**  
+| Category                           | 2025  | 2026  | 2027  | 2028  | 2029  |  
+|------------------------------------|-------|-------|-------|-------|-------|  
+| Public Administration              | ...   | ...   | ...   | ...   | ...   |  
+| Military                           | ...   | ...   | ...   | ...   | ...   |  
+| ...                                | ...   | ...   | ...   | ...   | ...   |  
+Change years, category and value as per user question 
+**Calculations:**  
+- [Provide a brief explanation of how the forecast values were derived.]  
+
+**Summary:**  
+- [Provide a concise summary highlighting key trends and findings.]  
+
             """
-                    },
-                    {
-                        "role": "user",
-                        "content": "Show expense forecast by sector",
-                    }
-                ],
-                model="llama-3.1-70b-versatile",
-            )
 			
-            return chat_completion.choices[0].message.content  # Return generated text
-        except Exception as e:
-            st.error(f"Error: {e}")
-            retry_count += 1
-            if retry_count == max_retries:
-                st.error(f"Error generating content: Server not available. Please try again after sometime")
-            time.sleep(delay)
-    
-    # Return None if all retries fail
-    return None
+# Combine the system prompt with the user question
+    prompt = f"{system_prompt}\n\nUser Question:{user_question}"
+
+    # Initialize Groq Langchain chat object and conversation
+    groq_chat = ChatGroq(
+            groq_api_key=groq_api_key, 
+            model_name=model
+    )
+
+    # If the user has asked a question,
+    if user_question:
+
+        # Construct a chat prompt template using various components
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessage(
+                    content=system_prompt
+                ),  # This is the persistent system prompt that is always included at the start of the chat.
+
+                MessagesPlaceholder(
+                    variable_name="chat_history"
+                ),  # This placeholder will be replaced by the actual chat history during the conversation. It helps in maintaining context.
+
+                HumanMessagePromptTemplate.from_template(
+                    "{user_question}"
+                ),  # This template is where the user's current input will be injected into the prompt.
+            ]
+        )
+
+        # Create a conversation chain using the LangChain LLM (Language Learning Model)
+        conversation = LLMChain(
+            llm=groq_chat,  # The Groq LangChain chat object initialized earlier.
+            prompt=prompt,  # The constructed prompt template.
+            verbose=True,   # Enables verbose output, which can be useful for debugging.
+            memory=memory,  # The conversational memory object that stores and manages the conversation history.
+        )
+        
+        response = conversation.predict(human_input=user_question)
+        message = {'human':user_question,'AI':response}
+        st.session_state.chat_history.append(message)
+        
+    return response
 
 def main():
     st.markdown("")
