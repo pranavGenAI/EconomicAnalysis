@@ -39,7 +39,7 @@ background_html = """
 
         // Arrays to store bubbles
         let bubbles = [];
-        const numBubbles = 30;
+        const numBubbles = 100;
         const glowDuration = 1000; // Glow duration in milliseconds
 
         // Function to initialize bubbles
@@ -81,7 +81,7 @@ background_html = """
                 // Set glow effect if bubble should glow
                 if (glowIntensity > 0) {
                     let gradient = ctx.createRadialGradient(bubble.x, bubble.y, 0, bubble.x, bubble.y, bubble.radius);
-                    gradient.addColorStop(0, rgba(255, 255, 255, ${glowIntensity}));
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${glowIntensity})`);
                     gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
                     ctx.fillStyle = gradient;
                 } else {
@@ -189,9 +189,12 @@ st.markdown("""
         }
     </style>
     <p class="animated-gradient-text">
-        Economic Forecast Bot!
+        Bid Creation Bot : Generates Bid Document!
     </p>
 """, unsafe_allow_html=True)
+
+
+
 
 st.markdown("""
     <style>
