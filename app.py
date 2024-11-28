@@ -362,6 +362,15 @@ def main():
         # Document tab
         with tabs[0]:
             uploaded_images = ["KSAEco.png"]
+            col4, col5, col6, col7, col8 = st.columns([3, 2, 3,2,2])
+            with col4:
+                inflation = st.text_input("Inflation %",value="1.9", key="inflation")
+                interest = st.text_input("Interest Rate",value="5.25", key="interest")
+                Population_growth = st.text_input("Population Growth Rate",value="1.5", key="Population_growth")
+            with col6:
+                alpha = st.text_input("Alpha",value="0.2", key="Alpha")
+                beta = st.text_input("Beta",value="0.15", key="Beta")
+                
             user_question = st.text_input("Ask a Question", key="user_question")
             #st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
 
@@ -384,7 +393,7 @@ def main():
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(user_question,image)  # Generate content from image
+                            generated_text = generate_content(user_question, inflation, interest, Population_growth, alpha, beta,image)  # Generate content from image
                    
         # System tab
         with tabs[1]:
