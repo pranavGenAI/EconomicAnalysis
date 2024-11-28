@@ -348,60 +348,23 @@ Change years, category and value as per user question
     # Return None if all retries fail
     return None
 
-
 def main():
-    st.markdown(
-        """
-        <style>
-        /* Modern tab styles */
-        .st-tabs [role="tablist"] {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid #ddd;
-        }
-        .st-tabs button[role="tab"] {
-            flex-grow: 1;
-            background-color: #f5f5f5;
-            border: none;
-            padding: 1rem;
-            font-size: 16px;
-            transition: all 0.3s ease-in-out;
-            color: #333;
-            cursor: pointer;
-            outline: none;
-        }
-        .st-tabs button[role="tab"]:hover {
-            transform: scale(1.05);
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .st-tabs button[role="tab"][aria-selected="true"] {
-            background-color: #4CAF50;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            transform: scale(1.1);
-        }
-        .st-tabs button[role="tab"]:focus {
-            outline: 2px solid #4CAF50;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
+    st.markdown("")
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
+
     generated_text = ""
 
     with col1:
-        # Modernized tabs with hover effects
+        # Place tabs within col1
         tabs = st.tabs(["📄 Ask Question here", "⚙️ Background scenarios", "📃 See Fiscal Data here"])
 
         # Document tab
         with tabs[0]:
-            uploaded_images = ["KSAEco.png"]
+            uploaded_images = ["KSAEco.png"]                
             user_question = st.text_input("Ask a Question", key="user_question")
+            #st.file_uploader("Upload images", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
 
-            # Inject custom CSS to hide an unwanted element (if needed)
+                        # Inject custom CSS to hide the element
             hide_css = """
             <style>
                 .st-emotion-cache-fis6aj, .e1b2p2ww10 {
@@ -411,7 +374,7 @@ def main():
             </style>
             """
             st.markdown(hide_css, unsafe_allow_html=True)
-
+            
             # Display uploaded images and data extraction button
             if uploaded_images:
                 for uploaded_image in uploaded_images:
@@ -420,18 +383,18 @@ def main():
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(user_question, inflation, interest, Population_growth, alpha, beta, image)  # Generate content from image
+                            generated_text = generate_content(user_question, inflation, interest, Population_growth, alpha, beta,image)  # Generate content from image
 
         with tabs[1]:
-            col4, col5, col6, col7, col8 = st.columns([3, 2, 3, 2, 2])
+            col4, col5, col6, col7, col8 = st.columns([3, 2, 3,2,2])
             with col4:
-                inflation = st.text_input("Inflation %", value="1.9", key="inflation")
-                interest = st.text_input("Interest Rate", value="5.25", key="interest")
-                Population_growth = st.text_input("Population Growth Rate", value="1.68", key="Population_growth")
+                inflation = st.text_input("Inflation %",value="1.9", key="inflation")
+                interest = st.text_input("Interest Rate",value="5.25", key="interest")
+                Population_growth = st.text_input("Population Growth Rate",value="1.68", key="Population_growth")
             with col6:
-                gdp_anual = st.text_input("GDP Annual Growth Rate", value="-0.3", key="gdp_anual")
-                alpha = st.text_input("Alpha", value="0.2", key="Alpha")
-                beta = st.text_input("Beta", value="0.15", key="Beta")
+                gdp_anual = st.text_input("GDP Annual Growth Rate",value="-0.3", key="gdp_anual")
+                alpha = st.text_input("Alpha",value="0.2", key="Alpha")
+                beta = st.text_input("Beta",value="0.15", key="Beta")
 
         # System tab
         with tabs[2]:
