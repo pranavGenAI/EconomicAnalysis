@@ -440,7 +440,6 @@ Change years, category and value as per user question
         )
         
         response_json = conversation.predict(response=response)
-        st.write(response_json)
         data = json.loads(response_json)
         # Ensure "forecast" exists in the data
         if "forecast" in data:
@@ -466,6 +465,7 @@ Change years, category and value as per user question
             st.dataframe(df)
         else:
             st.write("The forecast data is not available in the response.")
+	return response
 
 def main():
     st.markdown("")
