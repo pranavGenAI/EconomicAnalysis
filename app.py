@@ -196,16 +196,16 @@ st.markdown("""
 
 
 
-st.markdown("""
-    <style>
-        .css-1d391kg {  /* This is the default Streamlit header class */
-            display: none;
-        }
-        .stAppHeader, .st-emotion-cache-h4xjwg, .ezrtsby2 { 
-            display: none;
-        }
-    </style>
-""", unsafe_allow_html=True)
+# st.markdown("""
+#     <style>
+#         .css-1d391kg {  /* This is the default Streamlit header class */
+#             display: none;
+#         }
+#         .stAppHeader, .st-emotion-cache-h4xjwg, .ezrtsby2 { 
+#             display: none;
+#         }
+#     </style>
+# """, unsafe_allow_html=True)
 
 # Initialize session state
 if "logged_in" not in st.session_state:
