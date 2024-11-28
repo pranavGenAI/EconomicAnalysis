@@ -395,7 +395,7 @@ Change years, category and value as per user question
         prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessage(
-                    content=""" Convert the input data table to JSON format like below. Return only 1 JSON and do not return anything else only JSON and nothing else.:
+                    content=""" Convert the input data table to JSON format like below:
                      {
     "forecast": [
         {
@@ -443,21 +443,26 @@ Change years, category and value as per user question
         response_json = conversation.predict(response=response)
         st.write(response_json)
         data = response_json
-        df = pd.DataFrame(data["forecast"])
-        # Plot each category
-        plt.figure(figsize=(12, 6))
-        for column in df.columns[1:]:
-            plt.plot(df["year"], df[column], label=column)
+# Ensure "forecast" exists in the data
+        if "forecast" in data:
+            df = pd.DataFrame(data["forecast"])
 
-        # Add labels, title, legend, and grid
-        plt.xlabel("Year", fontsize=12)
-        plt.ylabel("Expense (in units)", fontsize=12)
-        plt.legend(title="", bbox_to_anchor=(1.05, 1), loc="upper left")
-        plt.grid(alpha=0.3)
-        plt.tight_layout()
+            # Plot each category
+            plt.figure(figsize=(12, 6))
+            for column in df.columns[1:]:
+                plt.plot(df["year"], df[column], label=column)
 
-        # Show the plot
-        plt.show()
+            # Add labels, title, legend, and grid
+            plt.xlabel("Year", fontsize=12)
+            plt.ylabel("Expense (in units)", fontsize=12)
+            plt.legend(title="", bbox_to_anchor=(1.05, 1), loc="upper left")
+            plt.grid(alpha=0.3)
+            plt.tight_layout()
+
+            # Show the plot
+            plt.show()
+        else:
+            st.write("The forecast data is not available in the response.")
 
     return response
 
