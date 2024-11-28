@@ -305,7 +305,7 @@ def generate_content(user_question,image, model):
             [
                 SystemMessage(
                     content="""
-	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
+	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses and only 1 table.
 Here is the input data:
 
 **Revenues**  
@@ -395,7 +395,7 @@ Change years, category and value as per user question
         prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessage(
-                    content=""" Convert the input data table to JSON format like below:
+                    content=""" Convert the input data table to JSON format like sample shown below and return only 1 Json output with complete table converted to json like below. Remember to include all the data available in the input text:
                      {
     "forecast": [
         {
