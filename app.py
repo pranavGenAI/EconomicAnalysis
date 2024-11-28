@@ -258,7 +258,7 @@ logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.p
 
 def generate_content(user_question,image):
     max_retries = 10
-    delay = 5
+    delay = 10
     retry_count = 0
     while retry_count < max_retries:
         try:
@@ -333,7 +333,7 @@ Change years, category and value as per user question
 # Combine the system prompt with the user question
             prompt = f"{system_prompt}\n\nUser Question:{user_question}"
 # Generate content using the image
-            print("Model generate")
+            print("prompt")
             # st.write(prompt)
             response = model.generate_content(prompt, stream=True)
             response.resolve()
