@@ -307,6 +307,8 @@ def generate_content(user_question,image, model):
                     content="""
 	    You are provided with historical economic data for revenues, expenditures, and expenses by sector in billion dollar from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
 Here is the input data:
+Some parameters which may help you in forecasting:
+Inflation= {interest}, Inflation= {inflation}, Population Growth Rate= {Population_growth}, GDP growth Rate= {gdp_anual}, Alpha = {alpha}, Beta = {beta}
 
 **Revenues**  
 | Category                                       | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |  
