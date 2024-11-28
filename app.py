@@ -392,6 +392,56 @@ Change years, category and value as per user question
         message = {'human':user_question,'AI':response}
         st.session_state.chat_history.append(message)
         
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessage(
+                    content=""" Convert the input data table to JSON format like below:
+                     {
+    "forecast": [
+        {
+            "year": 2025,
+            "Public Administration": 47,
+            "Military": 281,
+            "Security and Regional Admin.": 115,
+            "Municipal Services": 84,
+            "Education": 198,
+            "Health and Social Development": 221,
+            "Economic Resources": 87,
+            "Infrastructure and Transportation": 40,
+            "General Items": 226
+        },
+        {
+            "year": 2026,
+            "Public Administration": 51,
+            "Military": 293,
+            "Security and Regional Admin.": 118,
+            "Municipal Services": 87,
+            "Education": 201,
+            "Health and Social Development": 228,
+            "Economic Resources": 90,
+            "Infrastructure and Transportation": 42,
+            "General Items": 236
+        }
+    ]
+}
+            """
+                ),  # This is the persistent system prompt that is always included at the start of the chat.
+                HumanMessagePromptTemplate.from_template(
+                    "\n Input text \n{response}"
+                ),  # This template is where the user's current input will be injected into the prompt.
+            ]
+        )
+
+        # Create a conversation chain using the LangChain LLM (Language Learning Model)
+        conversation = LLMChain(
+            llm=groq_chat,  # The Groq LangChain chat object initialized earlier.
+            prompt=prompt,  # The constructed prompt template.
+            verbose=True,   # Enables verbose output, which can be useful for debugging.
+            memory=memory,  # The conversational memory object that stores and manages the conversation history.
+        )
+        
+        response_json = conversation.predict(response=response)
+        st.write(response_json)
     return response
 
 def main():
