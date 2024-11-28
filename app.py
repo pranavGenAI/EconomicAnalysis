@@ -345,7 +345,6 @@ Here is the input data:
 | General Items                   | 108   | 121   | 156   | 147   | 159   | 216   | 216   |  
 
 **Instructions:**  
-- Use this data to forecast values for the period 2025–2029.  
 - Provide a table with forecasted revenues, expenditures, and sector-wise expenses as per user question.  
 - Include brief calculations, key assumptions, and a concise summary of the forecast.  
 
@@ -442,7 +441,7 @@ Change years, category and value as per user question
         
         response_json = conversation.predict(response=response)
         st.write(response_json)
-        data = response_json
+        data = json.loads(response_json)
 # Ensure "forecast" exists in the data
         if "forecast" in data:
             df = pd.DataFrame(data["forecast"])
