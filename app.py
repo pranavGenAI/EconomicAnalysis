@@ -177,6 +177,9 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+spacer, col = st.columns([5, 1])  
+with col:  
+	st.image('https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png', width = 120)
 
 st.markdown("""
     <style>
@@ -230,9 +233,6 @@ if "username" not in st.session_state:
 # #genai.configure(api_key=GOOGLE_API_KEY)
 groq_api_key = "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"
     # Display the Groq logo
-spacer, col = st.columns([5, 1])  
-with col:  
-	st.image('https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png', width = 120)
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
