@@ -340,6 +340,7 @@ Change years, category and value as per user question
             print("Response text", response.text)
             return response.text  # Return generated text
         except Exception as e:
+            st.error(f"Error: {e}")
             retry_count += 1
             if retry_count == max_retries:
                 st.error(f"Error generating content: Server not available. Please try again after sometime")
