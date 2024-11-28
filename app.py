@@ -356,7 +356,7 @@ def main():
 
     with col1:
         # Place tabs within col1
-        tabs = st.tabs(["📄 Ask Question here", "⚙️ Background scenarios", "📃 See Fiscal Data here"])
+        tabs = st.tabs(["💭 Ask Question here", "⚙️ Background scenarios", "📃 See Fiscal Data here"])
 
         # Document tab
         with tabs[0]:
