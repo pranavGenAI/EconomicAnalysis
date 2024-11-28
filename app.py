@@ -352,8 +352,7 @@ Change years, category and value as per user question
             """
 			
 # Combine the system prompt with the user question
-    prompt = f"{system_prompt}\n\nUser Question:{user_question}"
-
+  
     # Initialize Groq Langchain chat object and conversation
     groq_chat = ChatGroq(
             groq_api_key=groq_api_key, 
