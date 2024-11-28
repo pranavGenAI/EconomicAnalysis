@@ -400,6 +400,13 @@ Change years, category and value as per user question
 
 def main():
     st.markdown("")
+    model = st.sidebar.selectbox(
+        'Choose a model',
+        ['llama-3.1-70b-versatile', 'llama-3.1-70b-specdec', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it']
+    )
+    conversational_memory_length = 5
+    memory = ConversationBufferWindowMemory(k=conversational_memory_length, memory_key="chat_history", return_messages=True)
+
     col1, col2, col3 = st.columns([4, 1, 4])  # Create three columns
 
     generated_text = ""
