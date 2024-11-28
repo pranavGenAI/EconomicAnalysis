@@ -386,16 +386,16 @@ def main():
                         with st.spinner("Evaluating..."):
                             generated_text = generate_content(user_question, inflation, interest, Population_growth, alpha, beta,image)  # Generate content from image
 
-	with tabs[1]:
-		col4, col5, col6, col7, col8 = st.columns([3, 2, 3,2,2])
-		with col4:
-			inflation = st.text_input("Inflation %",value="1.9", key="inflation")
-			interest = st.text_input("Interest Rate",value="5.25", key="interest")
-			Population_growth = st.text_input("Population Growth Rate",value="1.68", key="Population_growth")
-		with col6:
-			gdp_anual = st.text_input("GDP Annual Growth Rate",value="-0.3", key="gdp_anual")
-			alpha = st.text_input("Alpha",value="0.2", key="Alpha")
-			beta = st.text_input("Beta",value="0.15", key="Beta")
+        with tabs[1]:
+            col4, col5, col6, col7, col8 = st.columns([3, 2, 3,2,2])
+            with col4:
+                inflation = st.text_input("Inflation %",value="1.9", key="inflation")
+                interest = st.text_input("Interest Rate",value="5.25", key="interest")
+                Population_growth = st.text_input("Population Growth Rate",value="1.68", key="Population_growth")
+            with col6:
+                gdp_anual = st.text_input("GDP Annual Growth Rate",value="-0.3", key="gdp_anual")
+                alpha = st.text_input("Alpha",value="0.2", key="Alpha")
+                beta = st.text_input("Beta",value="0.15", key="Beta")
 
         # System tab
         with tabs[2]:
