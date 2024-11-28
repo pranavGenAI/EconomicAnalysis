@@ -286,7 +286,24 @@ def generate_content(user_question,image, model):
                 {'input':message['human']},
                 {'output':message['AI']}
                 )
-            system_prompt = """
+            
+			
+# Combine the system prompt with the user question
+  
+    # Initialize Groq Langchain chat object and conversation
+    groq_chat = ChatGroq(
+            groq_api_key=groq_api_key, 
+            model_name=model
+    )
+
+    # If the user has asked a question,
+    if user_question:
+
+        # Construct a chat prompt template using various components
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessage(
+                    content="""
 	    You are provided with historical economic data for revenues, expenditures, and expenses by sector from 2018 to 2024. Use this data as input to create a detailed forecast table for the next 5 years (2025–2029), unless a different period is specified. Include calculations, key assumptions, and a concise summary at the end. The response must include forecasts for revenues, expenditures, and sector-wise expenses.
 Here is the input data:
 
@@ -350,23 +367,6 @@ Change years, category and value as per user question
 - [Provide a concise summary highlighting key trends and findings.]  
 
             """
-			
-# Combine the system prompt with the user question
-  
-    # Initialize Groq Langchain chat object and conversation
-    groq_chat = ChatGroq(
-            groq_api_key=groq_api_key, 
-            model_name=model
-    )
-
-    # If the user has asked a question,
-    if user_question:
-
-        # Construct a chat prompt template using various components
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                SystemMessage(
-                    content=system_prompt
                 ),  # This is the persistent system prompt that is always included at the start of the chat.
 
                 MessagesPlaceholder(
