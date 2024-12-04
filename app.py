@@ -513,15 +513,15 @@ def main():
 			
                 if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                        generated_text = generate_content(
-                            user_question=user_question,
-                            image=image,
-                            inflation=inflation,
-                            interest=interest,
-                            Population_growth=Population_growth,
-                            gdp_anual=gdp_anual,
-                            model=model
-                        )
+	                        generated_text = generate_content(
+	                            user_question=user_question,
+	                            image=image,
+	                            inflation=inflation,
+	                            interest=interest,
+	                            Population_growth=Population_growth,
+	                            gdp_anual=gdp_anual,
+	                            model=model
+	                        )
         with tabs[1]:
             col4, col5, col6, col8 = st.columns([2, 2, 2,2])
             with col4:
