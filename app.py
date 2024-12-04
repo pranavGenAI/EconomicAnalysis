@@ -274,7 +274,7 @@ logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.p
 st.sidebar.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width =70)
 st.sidebar.title('Model Selection')
 
-def generate_content(user_question,image, inflation, interest, Population_growth,gdp_anual, model):
+def generate_content(user_question,image, model):
     conversational_memory_length = 5
     memory = ConversationBufferWindowMemory(k=conversational_memory_length, memory_key="chat_history", return_messages=True)
 
@@ -516,10 +516,6 @@ def main():
 	                        generated_text = generate_content(
 	                            user_question=user_question,
 	                            image=image,
-	                            inflation=inflation,
-	                            interest=interest,
-	                            Population_growth=Population_growth,
-	                            gdp_anual=gdp_anual,
 	                            model=model
 	                        )
         with tabs[1]:
