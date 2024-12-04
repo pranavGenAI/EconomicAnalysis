@@ -469,6 +469,7 @@ Change years, category and value as per user question
             st.write("The forecast data is not available in the response.")
         return response
 
+
 def main():
     st.markdown("")
     model = st.sidebar.selectbox(
@@ -509,11 +510,18 @@ def main():
                 for uploaded_image in uploaded_images:
                     image = PIL.Image.open(uploaded_image)
                     button_label = f"Submit {uploaded_images.index(uploaded_image) + 1}" if len(uploaded_images) > 1 else "Submit"
-
-                    if st.button(button_label):
+			
+                if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(user_question,image, inflation, interest, Population_growth,gdp_anual, model)  # Generate content from image
-
+                        generated_text = generate_content(
+                            user_question=user_question,
+                            image=image,
+                            inflation=inflation,
+                            interest=interest,
+                            Population_growth=Population_growth,
+                            gdp_anual=gdp_anual,
+                            model=model
+                        )
         with tabs[1]:
             col4, col5, col6, col8 = st.columns([2, 2, 2,2])
             with col4:
@@ -540,6 +548,7 @@ def main():
             st.markdown("### Evaluation Results:")
             st.write(generated_text)
 
+                
                 
 if __name__ == "__main__":
     if st.session_state.logged_in:
