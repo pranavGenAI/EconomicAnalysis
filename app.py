@@ -274,7 +274,7 @@ logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.p
 st.sidebar.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width =70)
 st.sidebar.title('Model Selection')
 
-def generate_content(user_question,image, model):
+def generate_content(user_question,image, inflation, interest, Population_growth,gdp_anual, model):
     conversational_memory_length = 5
     memory = ConversationBufferWindowMemory(k=conversational_memory_length, memory_key="chat_history", return_messages=True)
 
@@ -512,7 +512,7 @@ def main():
 
                     if st.button(button_label):
                         with st.spinner("Evaluating..."):
-                            generated_text = generate_content(user_question,image, model)  # Generate content from image
+                            generated_text = generate_content(user_question,image, inflation, interest, Population_growth,gdp_anual, model)  # Generate content from image
 
         with tabs[1]:
             col4, col5, col6, col8 = st.columns([2, 2, 2,2])
